@@ -1,7 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DEFAULT_BLACKLIST, DEFAULT_WHITELIST, RULE_ID_COUNT } from "../../src/lib/constants";
+import {
+  AUTHOR_EMAIL,
+  DEFAULT_BLACKLIST,
+  DEFAULT_WHITELIST,
+  EXTENSION_TUTORIAL_URL,
+  FEEDBACK_URL,
+  REPOSITORY_URL,
+  RULE_ID_COUNT
+} from "../../src/lib/constants";
 import { normalizeDomain } from "../../src/lib/domain";
 import { getFocusStatus, pauseFocusSession, resumeFocusSession, startFocusSession, stopFocusSession } from "../../src/lib/focus";
+import { openExternalUrl } from "../../src/lib/links";
 import { getFocusRecords, getTimeStats, saveSettings } from "../../src/lib/storage";
 import { getDomainStats, focusMsForDay } from "../../src/lib/stats";
 import { clampMinutes, dateKey, formatCompactDuration, formatDuration } from "../../src/lib/time";
@@ -9,6 +18,11 @@ import type { FocusMode, FocusStatus } from "../../src/lib/types";
 
 const presets = [25, 45, 60];
 const pausePresets = [1, 5, 15];
+const supportLinks = [
+  { label: "反馈", url: FEEDBACK_URL },
+  { label: "GitHub", url: REPOSITORY_URL },
+  { label: "教程", url: EXTENSION_TUTORIAL_URL }
+];
 
 export default function App() {
   const [status, setStatus] = useState<FocusStatus | null>(null);
@@ -17,6 +31,7 @@ export default function App() {
   const [customMinutes, setCustomMinutes] = useState(25);
   const [domainInput, setDomainInput] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showContact, setShowContact] = useState(false);
   const loadedDefaultMinutes = useRef(false);
 
   const effectiveMode = status?.session?.mode ?? status?.settings.blockMode;
@@ -132,7 +147,7 @@ export default function App() {
           <div className="actions three">
             {pausePresets.map((minutes) => (
               <button key={minutes} onClick={() => pauseFocusSession(minutes).then(reload)}>
-                暂停 {minutes} 分钟
+                暂停 {minutes} 分
               </button>
             ))}
           </div>
@@ -237,6 +252,24 @@ export default function App() {
       <button className="options" onClick={() => chrome.runtime.openOptionsPage()}>
         打开完整设置
       </button>
+
+      <section className="support-strip" aria-label="帮助链接">
+        {supportLinks.map((item) => (
+          <button key={item.label} onClick={() => openExternalUrl(item.url)}>
+            {item.label}
+          </button>
+        ))}
+        <button onClick={() => setShowContact((value) => !value)}>
+          联系
+        </button>
+      </section>
+
+      {showContact ? (
+        <div className="contact-line">
+          <span>联系作者</span>
+          <a href={`mailto:${AUTHOR_EMAIL}`}>{AUTHOR_EMAIL}</a>
+        </div>
+      ) : null}
     </main>
   );
 }

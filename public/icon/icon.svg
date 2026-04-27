@@ -1,6 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <rect width="128" height="128" fill="#101010"/>
-  <rect x="18" y="18" width="92" height="92" fill="#f6f4ee"/>
-  <rect x="29" y="29" width="70" height="70" fill="#101010"/>
-  <text x="64" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="900" fill="#f6f4ee">01</text>
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <rect width="240" height="240" fill="#000000"/>
+  <g transform="translate(0 240) scale(0.1 -0.1)" fill="#ffffff" stroke="none">
+    <path d="M680 1843 c-14 -3 -56 -19 -95 -37 -134 -62 -225 -190 -261 -365 -23 -116 -15 -317 15 -414 71 -221 238 -347 461 -347 220 0 384 123 457 344 24 73 27 95 27 236 0 119 -4 170 -18 219 -52 189 -168 313 -331 356 -55 14 -196 18 -255 8z m196 -254 c39 -24 79 -100 94 -178 25 -134 3 -344 -43 -413 -74 -109 -203 -101 -264 17 -31 58 -43 130 -43 250 0 179 33 283 104 326 42 25 109 25 152 -2z"/>
+    <path d="M1548 1737 l-137 -92 -1 -133 0 -132 135 90 c74 49 137 90 140 90 3 0 5 -193 5 -430 l0 -430 155 0 155 0 0 565 0 565 -157 0 -158 -1 -137 -92z"/>
+  </g>
 </svg>

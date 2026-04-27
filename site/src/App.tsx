@@ -1,28 +1,245 @@
+import { useEffect } from "react";
+
 const downloadUrl = "/downloads/01kit-chrome.zip";
-const promoVideoUrl = "/media/01kit-promo.mp4";
-const promoPosterUrl = "/media/01kit-promo-poster.png";
 const storeUrl = "https://chromewebstore.google.com/search/01Kit";
-const tutorialUrl = "/docs/ai-chrome-extension-guide.md";
+const tutorialUrl = "https://www.01mvp.com/docs/mvp/ai-chrome-extension-guide";
+
+type Locale = "zh" | "en";
+type SiteVideo = {
+  label: string;
+  title: string;
+  body: string;
+  src: string;
+  poster: string;
+};
+
+const copy = {
+  zh: {
+    htmlLang: "zh-CN",
+    title: "01Kit Chrome - 本地优先的专注工具",
+    description: "01Kit 是一个本地优先的 Chrome 生产力插件，包含专注模式、网站屏蔽和时间统计。",
+    navLabel: "主导航",
+    nav: {
+      features: "功能",
+      video: "视频",
+      install: "安装",
+      guide: "教程",
+      privacy: "隐私",
+      language: "EN"
+    },
+    hero: {
+      badges: ["本地优先", "零上传", "开源"],
+      title: <>专注时间<br />不被打断</>,
+      lead: <>一键屏蔽分心网站，自动记录时间分配。<br />所有数据保存在浏览器本地，永不上传。</>,
+      store: "Chrome 应用商店安装",
+      download: "下载离线包"
+    },
+    mock: {
+      aria: "01Kit 插件界面示意",
+      status: "专注中",
+      pause: "暂停 5 分钟",
+      end: "结束专注"
+    },
+    strip: ["专注计时", "网站屏蔽", "时间统计", "本地数据"],
+    videos: {
+      eyebrow: "视频",
+      title: "先看一遍，再开始用",
+      lead: "快速演示看完整操作，Motion 动画看核心价值。当前页面展示中文版本。",
+      demo: {
+        label: "快速演示",
+        title: "从开启专注到查看统计",
+        body: "节奏更快，适合在页面或发布材料里直接展示产品流程。",
+        src: "/media/01kit-demo-zh.mp4",
+        poster: "/media/01kit-demo-zh-poster.png"
+      },
+      motion: {
+        label: "Motion 动画",
+        title: "01Kit 能解决什么问题",
+        body: "同一套内容制作中英文两版，适合作为产品介绍视频。",
+        src: "/media/01kit-motion-zh.mp4",
+        poster: "/media/01kit-motion-zh-poster.png"
+      }
+    },
+    features: {
+      eyebrow: "核心功能",
+      title: "专注、屏蔽、统计，三个功能解决一个问题",
+      items: [
+        ["专注计时", "25/45/60 分钟预设，或自定义 1-240 分钟。一键开启，自动屏蔽分心网站。"],
+        ["智能屏蔽", "黑名单拦截干扰源，白名单保护工作流。专注期间自动生效，结束后恢复访问。"],
+        ["时间统计", "按域名记录停留时间，支持日/周/月视图。窗口失焦不计时，数据真实可靠。"],
+        ["本地存储", "所有数据保存在浏览器本地，不上传服务器。可排除敏感网站，一键清除记录。"]
+      ],
+      noteLabel: "开发者",
+      notePrefix: "想了解插件开发流程？查看",
+      noteLink: "配套教程",
+      noteSuffix: "，从产品设计到发布上架的完整实战。"
+    },
+    privacyBand: {
+      eyebrow: "隐私承诺",
+      title: "数据不出浏览器",
+      body: <>01Kit 需要全站点权限来识别域名、统计时间和执行屏蔽规则。<strong>所有操作都在本地完成</strong>，不读取页面内容，不使用同步存储，不上传任何数据到服务器。你可以随时排除敏感网站或清除历史记录。</>
+    },
+    install: {
+      eyebrow: "安装方式",
+      title: "两种安装方式",
+      steps: [
+        ["Chrome 应用商店", "能访问 Chrome 应用商店时，直接从商店安装，自动更新。", "前往应用商店"],
+        ["离线安装包", <>不能访问商店时，下载离线包，打开 <code>chrome://extensions</code>，启用开发者模式后加载解压目录。</>, "下载离线包"]
+      ]
+    },
+    footer: {
+      maker: "01Kit by 01MVP",
+      guide: "AI 开发教程",
+      privacy: "隐私说明"
+    },
+    privacy: {
+      back: "返回 01Kit",
+      title: "01Kit 隐私说明",
+      paragraphs: [
+        "01Kit 不上传你的浏览记录、专注记录或站点配置。",
+        "插件会在本地识别当前标签页域名，用于网站屏蔽和按域名聚合的时间统计。",
+        "插件使用 Chrome 本地存储保存时间统计、专注记录、黑名单、白名单、隐私排除列表和偏好设置，不使用同步存储。",
+        "全站点权限只用于在本地识别当前域名和执行屏蔽规则，不读取页面正文、表单内容、Cookie、账号密码或个人通信内容，也不会向外发送数据。",
+        "你可以在插件设置页排除敏感网站，也可以清除全部统计数据。",
+        "01Kit 不出售、不转让、不共享用户数据，也不会把用户数据用于广告或再营销。",
+        "离线安装包托管在本站，下载行为可能会被 Cloudflare 按常规方式记录访问日志。"
+      ]
+    }
+  },
+  en: {
+    htmlLang: "en",
+    title: "01Kit Chrome - Local-first focus for your browser",
+    description: "01Kit is a local-first Chrome productivity extension with focus mode, site blocking, and time stats.",
+    navLabel: "Primary navigation",
+    nav: {
+      features: "Features",
+      video: "Videos",
+      install: "Install",
+      guide: "Guide",
+      privacy: "Privacy",
+      language: "中文"
+    },
+    hero: {
+      badges: ["Local-first", "No uploads", "Open source"],
+      title: <>Focus time<br />without detours</>,
+      lead: <>Block distracting sites with one click.<br />See where browser time goes.<br />Your data stays in your browser.</>,
+      store: "Install from Chrome Web Store",
+      download: "Download offline package"
+    },
+    mock: {
+      aria: "01Kit extension interface preview",
+      status: "Focus running",
+      pause: "Pause 5 min",
+      end: "End focus"
+    },
+    strip: ["Focus timer", "Site blocking", "Time stats", "Local data"],
+    videos: {
+      eyebrow: "Videos",
+      title: "Watch the flow before you install",
+      lead: "The fast demo shows the product workflow. The motion video explains the core value. This page shows the English versions.",
+      demo: {
+        label: "Fast demo",
+        title: "Start focus, block distractions, review stats",
+        body: "A faster walkthrough for the website, launch posts, and store materials.",
+        src: "/media/01kit-demo-en.mp4",
+        poster: "/media/01kit-demo-en-poster.png"
+      },
+      motion: {
+        label: "Motion video",
+        title: "What 01Kit helps you finish",
+        body: "The same story is available in Chinese and English for product introduction.",
+        src: "/media/01kit-motion-en.mp4",
+        poster: "/media/01kit-motion-en-poster.png"
+      }
+    },
+    features: {
+      eyebrow: "Core features",
+      title: "Focus, block, and measure in one small extension",
+      items: [
+        ["Focus timer", "Use 25/45/60 minute presets or set any duration from 1 to 240 minutes. Start once and blocking turns on automatically."],
+        ["Smart blocking", "Blocklist distracting sites and keep work sites open with an allowlist. Rules activate during focus and restore afterward."],
+        ["Time stats", "See time by domain across day, week, and month views. Unfocused windows are not counted."],
+        ["Local storage", "Stats, lists, and settings stay in Chrome local storage. Exclude sensitive sites or clear history at any time."]
+      ],
+      noteLabel: "Builder guide",
+      notePrefix: "Want to see how the extension was built? Read the",
+      noteLink: "full guide",
+      noteSuffix: " from product design to Chrome Web Store submission."
+    },
+    privacyBand: {
+      eyebrow: "Privacy",
+      title: "Your data stays in the browser",
+      body: <>01Kit asks for all-site permission so it can read the current domain, track time, and apply blocking rules. <strong>Everything runs locally</strong>: it does not read page content, use sync storage, or upload browsing data.</>
+    },
+    install: {
+      eyebrow: "Install",
+      title: "Two ways to install",
+      steps: [
+        ["Chrome Web Store", "Install directly from the Chrome Web Store when it is available. Updates are handled automatically.", "Open Web Store"],
+        ["Offline package", <>If the store is not available, download the package, open <code>chrome://extensions</code>, enable Developer mode, and load the extracted folder.</>, "Download package"]
+      ]
+    },
+    footer: {
+      maker: "01Kit by 01MVP",
+      guide: "AI build guide",
+      privacy: "Privacy"
+    },
+    privacy: {
+      back: "Back to 01Kit",
+      title: "01Kit Privacy",
+      paragraphs: [
+        "01Kit does not upload your browsing history, focus records, or site lists.",
+        "The extension identifies the current tab's domain locally for site blocking and domain-level time stats.",
+        "The extension stores time stats, focus records, blocklists, allowlists, privacy exclusions, and preferences in Chrome local storage. It does not use sync storage.",
+        "All-site permission is used locally to identify the current domain and apply blocking rules. 01Kit does not read page body text, form content, cookies, passwords, or personal communications, and does not send browsing data out.",
+        "You can exclude sensitive sites in settings, and you can clear all stats at any time.",
+        "01Kit does not sell, transfer, share, or use user data for advertising or remarketing.",
+        "The offline package is hosted on this site. Cloudflare may record standard access logs for download requests."
+      ]
+    }
+  }
+} as const;
 
 export default function App() {
-  if (window.location.pathname === "/privacy") {
-    return <Privacy />;
+  const locale = getLocale();
+  const isPrivacy = getPagePath(locale) === "/privacy";
+  const c = copy[locale];
+
+  useEffect(() => {
+    document.documentElement.lang = c.htmlLang;
+    document.title = isPrivacy ? `${c.privacy.title} - 01Kit` : c.title;
+
+    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+    if (description) {
+      description.content = c.description;
+    }
+  }, [c, isPrivacy]);
+
+  if (isPrivacy) {
+    return <Privacy locale={locale} />;
   }
+
+  const homePath = localizedPath(locale, "/");
+  const privacyPath = localizedPath(locale, "/privacy");
+  const languagePath = localizedPath(locale === "zh" ? "en" : "zh", "/");
 
   return (
     <main>
       <header className="site-header">
-        <nav aria-label="主导航">
-          <a className="brand" href="/">
+        <nav aria-label={c.navLabel}>
+          <a className="brand" href={homePath}>
             <img src="/icon.svg" alt="" />
             <strong>01Kit</strong>
           </a>
-          <div>
-            <a href="#features">功能</a>
-            <a href="#video">视频</a>
-            <a href="#install">安装</a>
-            <a href={tutorialUrl}>教程</a>
-            <a href="/privacy">隐私</a>
+          <div className="nav-links">
+            <a href="#features">{c.nav.features}</a>
+            <a href="#video">{c.nav.video}</a>
+            <a href="#install">{c.nav.install}</a>
+            <a href={tutorialUrl}>{c.nav.guide}</a>
+            <a href={privacyPath}>{c.nav.privacy}</a>
+            <a className="language-link" href={languagePath} lang={locale === "zh" ? "en" : "zh-CN"}>
+              {c.nav.language}
+            </a>
           </div>
         </nav>
       </header>
@@ -30,34 +247,29 @@ export default function App() {
       <section className="hero">
         <div className="hero-copy">
           <div className="hero-badge">
-            <span>本地优先</span>
-            <span>·</span>
-            <span>零上传</span>
-            <span>·</span>
-            <span>开源</span>
+            {c.hero.badges.map((badge, index) => (
+              <span key={badge}>{index === 0 ? badge : `· ${badge}`}</span>
+            ))}
           </div>
-          <h1>专注时间<br/>不被打断</h1>
-          <p className="hero-lead">
-            一键屏蔽分心网站，自动记录时间分配。<br/>
-            所有数据保存在浏览器本地，永不上传。
-          </p>
+          <h1>{c.hero.title}</h1>
+          <p className="hero-lead">{c.hero.lead}</p>
           <div className="cta">
             <a className="primary" href={storeUrl} target="_blank" rel="noreferrer">
-              <span>Chrome 应用商店安装</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <span>{c.hero.store}</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </a>
             <a className="secondary" href={downloadUrl}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 2V11M8 11L5 8M8 11L11 8M2 14H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 2V11M8 11L5 8M8 11L11 8M2 14H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <span>下载离线包</span>
+              <span>{c.hero.download}</span>
             </a>
           </div>
         </div>
 
-        <div className="product-shot" aria-label="01Kit 插件界面示意">
+        <div className="product-shot" aria-label={c.mock.aria}>
           <div className="browser-bar">
             <span />
             <span />
@@ -66,15 +278,15 @@ export default function App() {
           <div className="mock-popup">
             <div className="mock-head">
               <span>01Kit</span>
-              <div className="status-badge">专注中</div>
+              <div className="status-badge">{c.mock.status}</div>
             </div>
             <div className="timer">18:42</div>
             <div className="progress">
               <span />
             </div>
             <div className="mock-actions">
-              <span>暂停 5 分钟</span>
-              <span>结束专注</span>
+              <span>{c.mock.pause}</span>
+              <span>{c.mock.end}</span>
             </div>
             <div className="site-list">
               <div>
@@ -95,102 +307,140 @@ export default function App() {
       </section>
 
       <section className="strip">
-        <span>专注计时</span>
-        <span>网站屏蔽</span>
-        <span>时间统计</span>
-        <span>本地数据</span>
+        {c.strip.map((item) => (
+          <span key={item}>{item}</span>
+        ))}
       </section>
 
       <section className="video-section" id="video">
-        <div>
-          <p className="eyebrow">1 分钟了解</p>
-          <h2>看完就会用</h2>
-          <p>开启专注、屏蔽干扰、查看统计。无需注册，数据本地存储。</p>
+        <div className="section-copy">
+          <p className="eyebrow">{c.videos.eyebrow}</p>
+          <h2>{c.videos.title}</h2>
+          <p>{c.videos.lead}</p>
         </div>
-        <video controls playsInline preload="metadata" poster={promoPosterUrl}>
-          <source src={promoVideoUrl} type="video/mp4" />
-        </video>
+        <div className="video-grid">
+          <VideoCard video={c.videos.demo} />
+          <VideoCard video={c.videos.motion} />
+        </div>
       </section>
 
       <section className="features" id="features">
         <div className="features-header">
-          <h2>核心功能</h2>
-          <p>专注、屏蔽、统计，三个功能解决一个问题</p>
+          <p className="eyebrow">{c.features.eyebrow}</p>
+          <h2>{c.features.title}</h2>
         </div>
         <div className="features-grid">
-          <article className="feature-card feature-primary">
-            <div className="feature-icon">🎯</div>
-            <h3>专注计时</h3>
-            <p>25/45/60 分钟预设，或自定义 1-240 分钟。一键开启，自动屏蔽分心网站。</p>
-          </article>
-          <article className="feature-card feature-primary">
-            <div className="feature-icon">🚫</div>
-            <h3>智能屏蔽</h3>
-            <p>黑名单拦截干扰源，白名单保护工作流。专注期间自动生效，结束后恢复访问。</p>
-          </article>
-          <article className="feature-card">
-            <div className="feature-icon">📊</div>
-            <h3>时间统计</h3>
-            <p>按域名记录停留时间，支持日/周/月视图。窗口失焦不计时，数据真实可靠。</p>
-          </article>
-          <article className="feature-card">
-            <div className="feature-icon">🔒</div>
-            <h3>本地存储</h3>
-            <p>所有数据保存在浏览器本地，不上传服务器。可排除敏感网站，一键清除记录。</p>
-          </article>
+          {c.features.items.map(([title, body], index) => (
+            <article className={`feature-card ${index < 2 ? "feature-primary" : ""}`} key={title}>
+              <div className="feature-index">{String(index + 1).padStart(2, "0")}</div>
+              <h3>{title}</h3>
+              <p>{body}</p>
+            </article>
+          ))}
         </div>
         <div className="dev-note">
-          <span className="dev-badge">开发者</span>
-          <p>想了解插件开发流程？查看<a href={tutorialUrl}>配套教程</a>，从产品设计到发布上架的完整实战。</p>
+          <span className="dev-badge">{c.features.noteLabel}</span>
+          <p>
+            {c.features.notePrefix}
+            <a href={tutorialUrl}>{c.features.noteLink}</a>
+            {c.features.noteSuffix}
+          </p>
         </div>
       </section>
 
       <section className="privacy-band">
         <div>
-          <p className="eyebrow">隐私承诺</p>
-          <h2>数据不出浏览器</h2>
+          <p className="eyebrow">{c.privacyBand.eyebrow}</p>
+          <h2>{c.privacyBand.title}</h2>
         </div>
-        <p>
-          01Kit 需要全站点权限来识别域名、统计时间和执行屏蔽规则。<strong>所有操作都在本地完成</strong>，不读取页面内容，不使用同步存储，不上传任何数据到服务器。你可以随时排除敏感网站或清除历史记录。
-        </p>
+        <p>{c.privacyBand.body}</p>
       </section>
 
       <section className="install" id="install">
         <div>
-          <p className="eyebrow">安装方式</p>
-          <h2>两种安装方式</h2>
+          <p className="eyebrow">{c.install.eyebrow}</p>
+          <h2>{c.install.title}</h2>
         </div>
-        <div className="steps">
-          <article>
-            <span>1</span>
-            <p>能访问 Chrome 应用商店时，直接从商店安装。</p>
-          </article>
-          <article>
-            <span>2</span>
-            <p>不能访问时，下载离线包，打开 <code>chrome://extensions</code>，启用开发者模式后加载解压目录。</p>
-          </article>
+        <div className="install-content">
+          <div className="steps">
+            {c.install.steps.map(([title, body, action], index) => (
+              <article key={title}>
+                <span>{index + 1}</span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                  <a className={`install-btn ${index === 0 ? "primary" : "secondary"}`} href={index === 0 ? storeUrl : downloadUrl} target={index === 0 ? "_blank" : undefined} rel={index === 0 ? "noreferrer" : undefined}>
+                    {action}
+                  </a>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
       <footer>
-        <span>01Kit by 01MVP</span>
-        <a href={tutorialUrl}>AI 开发教程</a>
-        <a href="/privacy">隐私说明</a>
+        <span>{c.footer.maker}</span>
+        <a href={tutorialUrl}>{c.footer.guide}</a>
+        <a href={privacyPath}>{c.footer.privacy}</a>
       </footer>
     </main>
   );
 }
 
-function Privacy() {
+function VideoCard({ video }: { video: SiteVideo }) {
+  return (
+    <article className="video-card">
+      <div className="video-copy">
+        <p className="video-label">{video.label}</p>
+        <h3>{video.title}</h3>
+        <p>{video.body}</p>
+      </div>
+      <video controls playsInline preload="metadata" poster={video.poster}>
+        <source src={video.src} type="video/mp4" />
+      </video>
+    </article>
+  );
+}
+
+function Privacy({ locale }: { locale: Locale }) {
+  const c = copy[locale];
+  const homePath = localizedPath(locale, "/");
+  const languagePath = localizedPath(locale === "zh" ? "en" : "zh", "/privacy");
+
   return (
     <main className="privacy">
-      <a href="/">← 返回 01Kit</a>
-      <h1>01Kit 隐私说明</h1>
-      <p>01Kit 不上传你的浏览记录、专注记录或站点配置。</p>
-      <p>插件使用 Chrome 本地存储保存时间统计、黑名单、白名单和偏好设置，不使用同步存储。</p>
-      <p>全站点权限只用于在本地识别当前域名和执行屏蔽规则，不读取页面内容，也不会向外发送数据。</p>
-      <p>你可以在插件设置页排除敏感网站，也可以清除全部统计数据。</p>
-      <p>离线安装包托管在本站，下载行为可能会被 Cloudflare 按常规方式记录访问日志。</p>
+      <div className="privacy-actions">
+        <a href={homePath}>← {c.privacy.back}</a>
+        <a href={languagePath} lang={locale === "zh" ? "en" : "zh-CN"}>
+          {c.nav.language}
+        </a>
+      </div>
+      <h1>{c.privacy.title}</h1>
+      {c.privacy.paragraphs.map((paragraph) => (
+        <p key={paragraph}>{paragraph}</p>
+      ))}
     </main>
   );
+}
+
+function getLocale(): Locale {
+  return window.location.pathname === "/en" || window.location.pathname.startsWith("/en/") ? "en" : "zh";
+}
+
+function getPagePath(locale: Locale): string {
+  if (locale === "en") {
+    const path = window.location.pathname.replace(/^\/en/, "");
+    return path === "" ? "/" : path;
+  }
+
+  return window.location.pathname;
+}
+
+function localizedPath(locale: Locale, path: "/" | "/privacy"): string {
+  if (locale === "en") {
+    return path === "/" ? "/en" : `/en${path}`;
+  }
+
+  return path;
 }

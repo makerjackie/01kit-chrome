@@ -1,8 +1,44 @@
-# 01Kit Chrome Web Store 上架材料
+# 01Kit Chrome Web Store 上架资料
 
-这份文档用于填写 Chrome Web Store Developer Dashboard。实际提交前，把截图、宣传图和商店审核通过后的链接补上即可。
+这份资料用于填写 Chrome Web Store Developer Dashboard。截图和宣传图已经按商店尺寸生成在 `output/chrome-web-store/`。
 
-## 基础信息
+## 素材文件
+
+**安装包**
+
+运行：
+
+```bash
+npm run zip
+```
+
+上传 `.output/01kit-chrome-0.1.0-chrome.zip`。
+
+**商店截图**
+
+按这个顺序上传：
+
+1. `output/chrome-web-store/01kit-01-start-focus.png`
+2. `output/chrome-web-store/01kit-02-focus-running.png`
+3. `output/chrome-web-store/01kit-03-blocked-page.png`
+4. `output/chrome-web-store/01kit-04-rules-privacy.png`
+5. `output/chrome-web-store/01kit-05-stats-records.png`
+
+这些截图都是 `1280x800`。
+
+**宣传图**
+
+- 小宣传图：`output/chrome-web-store/01kit-small-promo-440x280.png`
+- Marquee 宣传图：`output/chrome-web-store/01kit-marquee-promo-1400x560.png`
+- 商店图标：`public/icon/icon-128.png`
+
+**重新生成素材**
+
+```bash
+npm run store:assets
+```
+
+## Store Listing
 
 **扩展名称**
 
@@ -12,15 +48,15 @@
 
 本地优先的 Chrome 专注插件，用专注计时、网站屏蔽和时间统计减少浏览器里的打扰。
 
-**分类建议**
+**分类**
 
-生产力
+Productivity / 生产力
 
 **语言**
 
 中文（简体）
 
-**官网**
+**官方网站**
 
 https://01kit-chrome.01mvp.com
 
@@ -28,7 +64,11 @@ https://01kit-chrome.01mvp.com
 
 https://01kit-chrome.01mvp.com/privacy
 
-## 商店详细描述
+**支持 URL**
+
+https://github.com/makerjackie/01kit-chrome/issues
+
+**详细描述**
 
 01Kit 是一个本地优先的 Chrome 专注插件，适合想减少分心、了解自己浏览时间的人。
 
@@ -38,15 +78,15 @@ https://01kit-chrome.01mvp.com/privacy
 
 - 专注计时：预设时长和自定义时长都支持。
 - 网站屏蔽：支持黑名单和白名单两种模式。
-- 临时暂停：需要处理临时事务时，可以暂停 5、10、15 分钟。
+- 临时暂停：需要处理临时事务时，可以暂停 1、5、15 分钟。
 - 时间统计：按域名查看今日、本周、本月的访问时间。
 - 专注记录：记录每次专注时长和完成情况。
-- 隐私排除：敏感网站可以加入排除列表，不进入时间统计。
+- 隐私排除：账号、银行、本地开发地址等网站可以排除在时间统计之外。
 - 数据导出：支持导出 CSV 和 JSON。
 
 隐私说明：
 
-01Kit 不上传浏览记录、专注记录、黑名单、白名单或偏好设置。所有插件数据都保存在 Chrome 本地存储中，不使用同步存储，不使用远程服务器处理你的数据。
+01Kit 会在浏览器本地识别当前标签页域名，用于网站屏蔽和按域名聚合的时间统计。扩展不读取页面正文、表单内容、Cookie 或账号密码，不上传浏览记录、专注记录、黑名单、白名单或偏好设置。所有插件数据都保存在 Chrome 本地存储中。
 
 权限说明：
 
@@ -56,63 +96,102 @@ https://01kit-chrome.01mvp.com/privacy
 - idle：用户离开电脑时停止计时，避免虚增访问时间。
 - notifications：专注结束时显示系统通知。
 - declarativeNetRequest：在本地执行网站屏蔽规则。
-- 全站点访问权限：用于本地识别当前域名并对任意网站执行屏蔽规则，不读取页面内容，不上传数据。
+- 全站点访问权限：用于识别任意网站的域名并执行用户设置的屏蔽规则，不读取页面内容，不上传数据。
 
-## 隐私实践填写建议
+## Privacy Practices
 
-**是否收集或使用用户数据**
-
-不收集。扩展不向开发者服务器发送浏览记录、页面内容、专注记录、站点配置或偏好设置。
-
-**是否处理网页浏览活动**
-
-扩展会在本地识别当前标签页的域名，用于用户可见的时间统计和网站屏蔽功能。域名统计只保存在用户浏览器本地。
-
-**是否出售、转让或用于广告**
-
-否。01Kit 不出售、不转让、不共享用户数据，也不将用户数据用于广告、再营销或个性化广告。
-
-**Limited Use 声明**
-
-01Kit 使用浏览器权限仅用于提供用户明确可见的功能：专注计时、网站屏蔽、时间统计、隐私排除和数据导出。扩展不会把用户数据传输给开发者服务器或第三方，也不会让人工读取用户数据。
-
-## 单一用途说明
+**Single purpose**
 
 01Kit 的单一用途是帮助用户在 Chrome 中减少分心并理解自己的浏览时间。所有功能都围绕这一用途展开：开启专注、屏蔽网站、统计域名停留时间、查看专注记录和导出本地数据。
 
-## 截图建议
+**Data usage**
 
-1. Popup 未开始专注：展示 25、45、60 分钟和自定义开始。
-2. Popup 专注中：展示剩余时间、暂停按钮和结束专注。
-3. 屏蔽页：展示剩余时间、返回和临时暂停。
-4. 设置页：展示黑名单、白名单和隐私排除。
-5. 统计页：展示今日、本周、本月的域名时间统计和专注记录。
+建议按“处理网页浏览活动，但只保存在本地”的口径填写：
 
-## 宣传片文案
+- Web browsing activity：是。扩展会在本地识别当前标签页域名，并按域名聚合停留时间。
+- Website content：否。不读取页面正文、表单内容、图片、视频、Cookie 或账号密码。
+- Personally identifiable information：否。
+- Authentication information：否。
+- Financial and payment information：否。
+- Health information：否。
+- Personal communications：否。
+- Location：否。
 
-**标题**
+**Data handling statements**
 
-让浏览器少一点打扰
+- 不出售用户数据。
+- 不把用户数据用于广告或个性化广告。
+- 不把用户数据转交给第三方。
+- 不允许人工读取用户数据。
+- 只把浏览器权限用于用户可见的专注计时、网站屏蔽、时间统计、隐私排除和数据导出。
 
-**短片脚本**
+**Remote code**
 
-1. 浏览器里的分心网站太容易打开。
-2. 打开 01Kit，选择一段专注时间。
-3. 黑名单挡住干扰，白名单只保留工作需要的网站。
-4. 被屏蔽时，页面会提醒你回到当前任务。
-5. 结束后，本地查看时间花在了哪里。
-6. 所有数据只保存在你的浏览器里。
+No. 01Kit 不执行远程代码，前端、后台脚本和样式都包含在扩展包内。
+
+**Permission justifications**
+
+| Permission | Justification |
+| --- | --- |
+| `storage` | 保存用户设置、专注会话、专注记录和按域名聚合的时间统计，数据只保存在本地浏览器。 |
+| `tabs` | 获取当前活动标签页的 URL 域名，用于本地时间统计、隐私排除和屏蔽规则判断。 |
+| `alarms` | 在 Manifest V3 Service Worker 中维持倒计时、暂停窗口和统计 tick。 |
+| `idle` | 检测用户离开电脑的状态，避免把离开时间计入网站停留时间。 |
+| `notifications` | 专注结束时显示系统通知。 |
+| `declarativeNetRequest` | 根据用户设置的黑名单或白名单，在本地拦截或放行主页面请求。 |
+| `<all_urls>` | 支持用户对任意网站设置屏蔽规则，并在本地识别当前域名做时间统计；不读取页面内容，不向服务器发送数据。 |
+
+## Distribution
+
+**Visibility**
+
+Public
+
+**Regions**
+
+All regions
+
+**Pricing**
+
+Free
+
+**Payment / in-app purchase**
+
+不启用。
+
+## Test Instructions
+
+不需要测试账号。
+
+建议填写：
+
+```text
+No account is required.
+
+To test 01Kit:
+1. Install the extension and open the popup.
+2. Start a 1-minute or 25-minute focus session.
+3. Keep blacklist mode enabled and add a distracting domain such as youtube.com.
+4. Open that domain in a tab. The extension should show the 01Kit blocked page.
+5. Use the temporary pause buttons to allow access for 1, 5, or 15 minutes.
+6. Open the options page to review blacklist, whitelist, privacy exclusions, time statistics, focus records, and CSV/JSON export.
+
+All data is stored locally in Chrome storage. No server account or external API is used.
+```
 
 ## 提交前检查
 
-- 版本号和 `wxt.config.ts` 中的 manifest 版本一致。
 - `npm run check` 通过。
-- `npm run zip` 生成最新安装包。
-- 官网下载包已更新到 `site/public/downloads/01kit-chrome.zip`。
-- 隐私政策页面可以访问。
-- 商店详情、隐私实践和官网说明没有互相矛盾。
+- `npm run store:assets` 已生成最新截图。
+- `npm run zip` 已生成最新安装包。
+- 隐私政策页面可以访问：`https://01kit-chrome.01mvp.com/privacy`。
+- Store Listing、Privacy Practices、官网和扩展功能描述一致。
+- 最终点击 `Submit for review` 前，确认使用的是正确 Google 开发者账号。
 
 ## 参考
 
-- Chrome Web Store 用户数据政策 FAQ：https://developer.chrome.com/docs/webstore/program-policies/user-data-faq
-- Chrome 扩展权限说明：https://developer.chrome.com/docs/extensions/reference/permissions-list
+- Chrome Web Store 上架流程：https://developer.chrome.com/docs/webstore/publish
+- Store Listing 字段：https://developer.chrome.com/docs/webstore/cws-dashboard-listing
+- 隐私字段：https://developer.chrome.com/docs/webstore/cws-dashboard-privacy
+- 图片尺寸要求：https://developer.chrome.com/docs/webstore/images
+- 分发设置：https://developer.chrome.com/docs/webstore/cws-dashboard-distribution

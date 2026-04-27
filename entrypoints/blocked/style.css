@@ -1,5 +1,5 @@
 :root {
-  background: #101010;
+  background: #11100e;
   color: #f6f4ee;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
@@ -11,32 +11,46 @@
 body {
   min-height: 100vh;
   margin: 0;
-  background: #101010;
+  background: #11100e;
 }
 
 button {
-  min-height: 52px;
-  border: 1px solid #f6f4ee;
+  min-height: 48px;
+  border: 1px solid currentColor;
   background: transparent;
-  color: #f6f4ee;
+  color: inherit;
   padding: 0 18px;
   font: inherit;
   font-weight: 750;
   cursor: pointer;
+  letter-spacing: 0;
 }
 
 button:hover {
   background: #f6f4ee;
-  color: #101010;
+  color: #11100e;
+}
+
+button:focus-visible {
+  outline: 3px solid #c7a04a;
+  outline-offset: 3px;
 }
 
 .blocked {
   min-height: 100vh;
-  width: min(720px, calc(100% - 32px));
+  width: min(1040px, calc(100% - 40px));
   margin: 0 auto;
   display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.8fr);
   align-content: center;
-  gap: 22px;
+  align-items: center;
+  gap: clamp(30px, 6vw, 72px);
+  padding: clamp(32px, 8vh, 96px) 0;
+}
+
+.blocked.ended {
+  grid-template-columns: 1fr;
+  width: min(720px, calc(100% - 40px));
 }
 
 .eyebrow,
@@ -45,21 +59,22 @@ h1 {
   margin: 0;
 }
 
+.focus-copy {
+  display: grid;
+  gap: clamp(18px, 3vw, 28px);
+}
+
 .eyebrow {
   color: #cbc6b8;
+  font-size: 14px;
+  font-weight: 750;
 }
 
 h1 {
-  max-width: 10ch;
-  font-size: clamp(56px, 12vw, 128px);
-  line-height: 0.9;
+  max-width: 9ch;
+  font-size: clamp(52px, 9vw, 112px);
+  line-height: 0.92;
   letter-spacing: 0;
-}
-
-.time {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: clamp(36px, 7vw, 72px);
-  font-weight: 900;
 }
 
 p {
@@ -67,23 +82,151 @@ p {
   font-size: 18px;
 }
 
+.quote {
+  max-width: 34rem;
+  color: #ded8ca;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.7;
+}
+
+.focus-panel {
+  display: grid;
+  gap: 22px;
+  border: 1px solid #f6f4ee;
+  background: #f6f4ee;
+  color: #11100e;
+  padding: clamp(20px, 3vw, 30px);
+}
+
+.time-block {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(17, 16, 14, 0.22);
+}
+
+.time-block span {
+  color: #6a6254;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(38px, 7vw, 72px);
+  font-weight: 900;
+  line-height: 1;
+}
+
 .actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  max-width: 660px;
+  gap: 16px;
 }
 
 .back-button {
-  color: #d8d2c2;
+  width: 100%;
+  border-color: #f6f4ee;
+  background: #f6f4ee;
+  color: #11100e;
+}
+
+.back-button:hover {
+  background: #ded8ca;
+  color: #11100e;
+}
+
+.focus-panel .back-button {
+  border-color: #11100e;
+  background: #11100e;
+  color: #f6f4ee;
+}
+
+.focus-panel .back-button:hover {
+  background: #2a271f;
+  color: #f6f4ee;
+}
+
+.ended .back-button {
+  width: min(260px, 100%);
+}
+
+.pause-group {
+  display: grid;
+  gap: 12px;
+}
+
+.pause-group p {
+  color: #6a6254;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.pause-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
 }
 
 .pause-button {
-  background: #f6f4ee;
-  color: #101010;
+  min-height: 84px;
+  display: grid;
+  align-content: center;
+  gap: 6px;
+  border-color: rgba(17, 16, 14, 0.28);
+  background: transparent;
+  color: #11100e;
+  padding: 12px;
+  text-align: left;
+}
+
+.pause-button strong {
+  font-size: 18px;
+  line-height: 1.1;
+}
+
+.pause-button span {
+  color: #6a6254;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .pause-button:hover {
-  background: #d8d2c2;
-  color: #101010;
+  border-color: #11100e;
+  background: #e5dcc9;
+  color: #11100e;
+}
+
+@media (max-width: 760px) {
+  .blocked {
+    width: min(680px, calc(100% - 32px));
+    grid-template-columns: 1fr;
+  }
+
+  h1 {
+    max-width: 11ch;
+  }
+}
+
+@media (max-width: 520px) {
+  .blocked,
+  .blocked.ended {
+    width: calc(100% - 28px);
+    gap: 26px;
+  }
+
+  h1 {
+    font-size: clamp(44px, 14vw, 64px);
+  }
+
+  .focus-panel {
+    padding: 18px;
+  }
+
+  .pause-options {
+    grid-template-columns: 1fr;
+  }
+
+  .pause-button {
+    min-height: 62px;
+  }
 }

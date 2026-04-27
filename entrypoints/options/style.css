@@ -4,6 +4,10 @@
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -31,6 +35,19 @@ select {
 button {
   padding: 0 12px;
   cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid #c7a04a;
+  outline-offset: 2px;
 }
 
 button:hover,
@@ -108,33 +125,63 @@ h2 {
   font-size: 30px;
 }
 
-.grid {
+.settings-layout {
   display: grid;
-  gap: 16px;
-  margin-top: 16px;
+  grid-template-columns: 168px minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  margin-top: 18px;
 }
 
-.grid.two {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+.side-nav {
+  position: sticky;
+  top: 18px;
+  display: grid;
+  gap: 6px;
+  border-left: 2px solid #101010;
+  padding-left: 12px;
+}
+
+.side-nav a {
+  color: #101010;
+  font-size: 14px;
+  line-height: 1.2;
+  padding: 8px 10px;
+  text-decoration: none;
+}
+
+.side-nav a:hover,
+.side-nav a:focus-visible {
+  background: #101010;
+  color: #f6f4ee;
+  outline: none;
+}
+
+.content-stack {
+  display: grid;
+  gap: 14px;
 }
 
 .panel {
   border: 1px solid #101010;
   background: #fffdf7;
   padding: 18px;
-  margin-top: 16px;
-}
-
-.grid .panel {
-  margin-top: 0;
+  scroll-margin-top: 20px;
 }
 
 .panel-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 14px;
+}
+
+.panel-subtitle {
+  color: #59554d;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-top: 4px;
 }
 
 .segmented,
@@ -146,7 +193,6 @@ h2 {
 
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -194,6 +240,11 @@ label {
 .record-list {
   display: grid;
   gap: 10px;
+}
+
+.expand-button {
+  width: 100%;
+  margin-top: 14px;
 }
 
 .stat-row {
@@ -275,6 +326,47 @@ label {
   background: #101010;
 }
 
+.help-panel .panel-head {
+  margin-bottom: 10px;
+}
+
+.help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.help-actions button {
+  min-height: 32px;
+  padding: 0 10px;
+}
+
+.contact-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  border: 1px solid #101010;
+  background: #f6f4ee;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.contact-card span {
+  color: #59554d;
+}
+
+.contact-card a {
+  color: #101010;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+.contact-card a:hover,
+.contact-card a:focus-visible {
+  text-decoration: underline;
+}
+
 @media (max-width: 760px) {
   .shell {
     width: min(100% - 20px, 1120px);
@@ -282,8 +374,7 @@ label {
   }
 
   .topbar,
-  .grid.two,
-  .form-grid,
+  .settings-layout,
   .stat-row {
     grid-template-columns: 1fr;
   }
@@ -295,5 +386,28 @@ label {
 
   .goal-box {
     min-width: 0;
+  }
+
+  .side-nav {
+    position: static;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    border-left: 0;
+    border-bottom: 1px solid #101010;
+    padding: 0 0 10px;
+  }
+
+  .side-nav a {
+    flex: 0 0 auto;
+    border: 1px solid #101010;
+  }
+
+  .panel-head {
+    display: grid;
+  }
+
+  .contact-card {
+    display: grid;
   }
 }

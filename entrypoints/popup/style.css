@@ -35,6 +35,12 @@ button:hover {
   color: #f6f4ee;
 }
 
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid #c7a04a;
+  outline-offset: 2px;
+}
+
 button:disabled {
   cursor: wait;
   opacity: 0.5;
@@ -274,4 +280,47 @@ h2 {
   width: 100%;
   margin-top: 10px;
   background: #f6f4ee;
+}
+
+.support-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.support-strip button {
+  min-height: 30px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+
+.contact-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  border: 1px solid #101010;
+  background: #fffdf7;
+  padding: 7px 8px;
+  font-size: 12px;
+}
+
+.contact-line span {
+  color: #5b574f;
+}
+
+.contact-line a {
+  overflow: hidden;
+  color: #101010;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.contact-line a:hover,
+.contact-line a:focus-visible {
+  text-decoration: underline;
 }

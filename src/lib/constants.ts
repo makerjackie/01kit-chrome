@@ -8,6 +8,10 @@ export const FOCUS_PAUSE_END_ALARM = "01kit-focus-pause-end";
 export const TRACKER_TICK_ALARM = "01kit-tracker-tick";
 export const DEFAULT_FOCUS_MINUTES = 25;
 export const TRACKER_MAX_DAYS = 120;
+export const REPOSITORY_URL = "https://github.com/makerjackie/01kit-chrome";
+export const FEEDBACK_URL = "https://github.com/makerjackie/01kit-chrome/issues";
+export const EXTENSION_TUTORIAL_URL = "https://www.01mvp.com/docs/mvp/ai-chrome-extension-guide";
+export const AUTHOR_EMAIL = "makerjackie@qq.com";
 
 export const DEFAULT_BLACKLIST = [
   "bilibili.com",
@@ -64,9 +68,12 @@ export const DEFAULT_TRACKER_STATE: TrackerState = {
 };
 
 export const QUOTES = [
-  "现在先把注意力留给重要的事。",
-  "离开这个页面，回到你真正想完成的工作。",
-  "少一点切换，多一点完成。",
-  "今天的进度来自当下这几分钟。",
-  "你已经设置了边界，继续保持。"
+  "把这一分钟留给手上的事。",
+  "先完成一小步，再回来也不迟。",
+  "不用和这个页面拉扯，回去写下一句。",
+  "少开一个标签，今天会轻一点。",
+  "还剩一点时间，先把注意力放回去。",
+  "想看的东西不会跑，专注的状态更难得。",
+  "先别急，给手上的事一个完整的收尾。",
+  "今天不需要完美，只要少走神一次。"
 ];

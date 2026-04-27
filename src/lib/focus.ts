@@ -177,7 +177,7 @@ function buildRules(session: FocusSession): any[] {
         priority: 1,
         action: redirectAction(),
         condition: {
-          regexFilter: "^https?://",
+          regexFilter: "^(https?://.*)",
           excludedRequestDomains: session.domains,
           resourceTypes: ["main_frame"]
         }
@@ -190,7 +190,7 @@ function buildRules(session: FocusSession): any[] {
     priority: 1,
     action: redirectAction(),
     condition: {
-      regexFilter: "^https?://",
+      regexFilter: "^(https?://.*)",
       requestDomains: [domain],
       resourceTypes: ["main_frame"]
     }
@@ -203,7 +203,7 @@ function redirectAction(): any {
   return {
     type: "redirect",
     redirect: {
-      regexSubstitution: `${blockedUrl}#\\0`
+      regexSubstitution: `${blockedUrl}#\\1`
     }
   };
 }

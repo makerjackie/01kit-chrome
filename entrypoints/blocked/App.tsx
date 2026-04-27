@@ -3,7 +3,11 @@ import { getFocusStatus, getRandomQuote, pauseFocusSession } from "../../src/lib
 import { formatDuration } from "../../src/lib/time";
 import type { FocusStatus } from "../../src/lib/types";
 
-const pauseOptions = [1, 5, 15];
+const pauseOptions = [
+  { minutes: 1, label: "1 分钟", hint: "只确认一件事" },
+  { minutes: 5, label: "5 分钟", hint: "处理必要内容" },
+  { minutes: 15, label: "15 分钟", hint: "留给真正急的事" }
+];
 
 function getBlockedUrl(): string | null {
   const rawUrl = window.location.hash.slice(1);
@@ -18,13 +22,27 @@ function getBlockedUrl(): string | null {
   }
 }
 
-function leaveBlockedPage() {
+async function closeCurrentTab() {
+  if (typeof chrome !== "undefined" && chrome.tabs?.getCurrent && chrome.tabs?.remove) {
+    try {
+      const tab = await chrome.tabs.getCurrent();
+      if (tab?.id) {
+        await chrome.tabs.remove(tab.id);
+        return;
+      }
+    } catch {}
+  }
+
+  window.close();
+}
+
+async function leaveBlockedPage() {
   if (history.length > 1) {
     history.back();
     return;
   }
 
-  window.close();
+  await closeCurrentTab();
 }
 
 export default function App() {
@@ -50,33 +68,56 @@ export default function App() {
       return;
     }
 
-    leaveBlockedPage();
+    await leaveBlockedPage();
   }
 
   if (!status?.session) {
     return (
-      <main className="blocked">
-        <p className="eyebrow">01Kit</p>
-        <h1>专注已结束</h1>
-        <button onClick={leaveBlockedPage}>返回上一页</button>
+      <main className="blocked ended">
+        <section className="focus-copy">
+          <p className="eyebrow">01Kit</p>
+          <h1>专注已结束</h1>
+          <p className="quote">可以回到刚才的页面，也可以开始下一段专注。</p>
+        </section>
+        <button className="back-button" onClick={() => void leaveBlockedPage()}>离开这个页面</button>
       </main>
     );
   }
 
   return (
     <main className="blocked">
-      <p className="eyebrow">01Kit</p>
-      <h1>现在先不打开这个网站</h1>
-      <div className="time">{formatDuration(status.remainingMs)}</div>
-      <p>{quote}</p>
-      <div className="actions">
-        <button className="back-button" onClick={leaveBlockedPage}>返回上一页</button>
-        {pauseOptions.map((minutes) => (
-          <button className="pause-button" key={minutes} onClick={() => pauseAndOpen(minutes)}>
-            临时打开 {minutes} 分钟
-          </button>
-        ))}
-      </div>
+      <section className="focus-copy">
+        <p className="eyebrow">01Kit · 专注中</p>
+        <h1>先回到正在做的事</h1>
+        <p className="quote">{quote}</p>
+      </section>
+
+      <section className="focus-panel" aria-label="当前专注状态">
+        <div className="time-block">
+          <span>剩余专注时间</span>
+          <strong className="time">{formatDuration(status.remainingMs)}</strong>
+        </div>
+
+        <div className="actions">
+          <button className="back-button" onClick={() => void leaveBlockedPage()}>离开这个页面</button>
+          <div className="pause-group">
+            <p>确实需要打开时，给自己一个短窗口。</p>
+            <div className="pause-options">
+              {pauseOptions.map((option) => (
+                <button
+                  aria-label={`放行 ${option.label}，${option.hint}`}
+                  className="pause-button"
+                  key={option.minutes}
+                  onClick={() => pauseAndOpen(option.minutes)}
+                >
+                  <strong>{option.label}</strong>
+                  <span>{option.hint}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }
