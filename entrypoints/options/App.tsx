@@ -37,7 +37,6 @@ export default function App() {
   const [range, setRange] = useState<StatsRange>("today");
   const [blackInput, setBlackInput] = useState("");
   const [whiteInput, setWhiteInput] = useState("");
-  const [exclusionInput, setExclusionInput] = useState("");
   const [showAllStats, setShowAllStats] = useState(false);
   const [showContact, setShowContact] = useState(false);
 
@@ -77,20 +76,19 @@ export default function App() {
     await saveSettings(next);
   }
 
-  async function addDomain(kind: "blacklist" | "whitelist" | "trackingExclusions", raw: string) {
+  async function addDomain(kind: "blacklist" | "whitelist", raw: string) {
     if (!settings) return;
     const domain = normalizeDomain(raw);
     if (!domain) return;
-    if (kind !== "trackingExclusions" && !settings[kind].includes(domain) && settings[kind].length >= RULE_ID_COUNT) return;
+    if (!settings[kind].includes(domain) && settings[kind].length >= RULE_ID_COUNT) return;
     await patchSettings({
       [kind]: Array.from(new Set([...settings[kind], domain])).sort()
     } as Partial<FocusSettings>);
     setBlackInput("");
     setWhiteInput("");
-    setExclusionInput("");
   }
 
-  async function removeDomain(kind: "blacklist" | "whitelist" | "trackingExclusions", domain: string) {
+  async function removeDomain(kind: "blacklist" | "whitelist", domain: string) {
     if (!settings) return;
     await patchSettings({
       [kind]: settings[kind].filter((item) => item !== domain)
@@ -141,7 +139,6 @@ export default function App() {
           <a href="#focus-settings">专注设置</a>
           <a href="#blacklist">黑名单</a>
           <a href="#whitelist">白名单</a>
-          <a href="#privacy-exclusions">隐私排除</a>
           <a href="#time-stats">时间统计</a>
           <a href="#focus-records">专注记录</a>
           <a href="#week-view">最近 7 天</a>
@@ -210,22 +207,6 @@ export default function App() {
               limit={RULE_ID_COUNT}
               onAdd={() => addDomain("whitelist", whiteInput)}
               onRemove={(domain) => removeDomain("whitelist", domain)}
-            />
-          </section>
-
-          <section className="panel" id="privacy-exclusions">
-            <div className="panel-head">
-              <div>
-                <h2>隐私排除</h2>
-                <p className="panel-subtitle">这些网站不会进入时间统计，适合放账号、银行和本地开发地址。</p>
-              </div>
-            </div>
-            <DomainEditor
-              domains={settings.trackingExclusions}
-              input={exclusionInput}
-              onInput={setExclusionInput}
-              onAdd={() => addDomain("trackingExclusions", exclusionInput)}
-              onRemove={(domain) => removeDomain("trackingExclusions", domain)}
             />
           </section>
 

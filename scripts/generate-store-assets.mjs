@@ -34,13 +34,6 @@ const defaultWhitelist = [
   "wxt.dev"
 ];
 
-const trackingExclusions = [
-  "accounts.google.com",
-  "bank",
-  "icloud.com",
-  "localhost"
-];
-
 class CdpClient {
   constructor(url) {
     this.nextId = 1;
@@ -113,7 +106,6 @@ function makeSettings() {
   return {
     blacklist: defaultBlacklist,
     whitelist: defaultWhitelist,
-    trackingExclusions,
     categories: {
       "bilibili.com": "video",
       "developer.chrome.com": "learn",
@@ -596,10 +588,10 @@ async function main() {
     await screenshot(client, join(rawDir, "blocked-page.png"), 1280, 800);
 
     await setViewport(client, 1280, 800);
-    await navigate(client, `${staticServer.baseUrl}/options.html?demo=options#privacy-exclusions`);
-    await evaluate(client, "document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, Math.max(0, (document.querySelector('#privacy-exclusions')?.offsetTop ?? 0) - 18))");
+    await navigate(client, `${staticServer.baseUrl}/options.html?demo=options#blacklist`);
+    await evaluate(client, "document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, Math.max(0, (document.querySelector('#blacklist')?.offsetTop ?? 0) - 18))");
     await settle(client);
-    await screenshot(client, join(rawDir, "options-privacy.png"), 1280, 800);
+    await screenshot(client, join(rawDir, "options-rules.png"), 1280, 800);
 
     await navigate(client, `${staticServer.baseUrl}/options.html?demo=options#time-stats`);
     await evaluate(client, "document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, Math.max(0, (document.querySelector('#time-stats')?.offsetTop ?? 0) - 18))");
@@ -610,7 +602,7 @@ async function main() {
     const popupStart = fileSrc(join(rawDir, "popup-start.png"));
     const popupActive = fileSrc(join(rawDir, "popup-active.png"));
     const blocked = fileSrc(join(rawDir, "blocked-page.png"));
-    const optionsPrivacy = fileSrc(join(rawDir, "options-privacy.png"));
+    const optionsRules = fileSrc(join(rawDir, "options-rules.png"));
     const optionsStats = fileSrc(join(rawDir, "options-stats.png"));
 
     await renderHtml(client, assetPage("一键开始专注", `
@@ -645,20 +637,20 @@ async function main() {
       .full img { object-fit: cover; object-position: center; }
     `), join(outputDir, "01kit-03-blocked-page.png"), 1280, 800);
 
-    await renderHtml(client, assetPage("规则和隐私排除", `
+    await renderHtml(client, assetPage("屏蔽规则", `
       <main class="frame options-frame">
         <section class="copy">
           <div class="mark"><img src="${icon}" alt="" />01Kit</div>
           <h1>规则清楚可控</h1>
-          <p>黑名单、白名单和隐私排除都在同一个设置页管理。敏感网站可以排除在时间统计之外。</p>
-          <div class="pills"><span>黑名单</span><span>白名单</span><span>隐私排除</span></div>
+          <p>黑名单和白名单都在设置页管理。专注开始后，规则会在本地立即生效。</p>
+          <div class="pills"><span>黑名单</span><span>白名单</span><span>本地生效</span></div>
         </section>
-        <section class="shot wide-shot"><img src="${optionsPrivacy}" alt="" /></section>
+        <section class="shot wide-shot"><img src="${optionsRules}" alt="" /></section>
       </main>
     `, `
       .options-frame { grid-template-columns: 440px 1fr; gap: 52px; }
       .wide-shot { width: 700px; height: 520px; }
-    `), join(outputDir, "01kit-04-rules-privacy.png"), 1280, 800);
+    `), join(outputDir, "01kit-04-rules.png"), 1280, 800);
 
     await renderHtml(client, assetPage("时间统计", `
       <main class="frame options-frame">

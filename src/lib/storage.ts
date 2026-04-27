@@ -65,14 +65,14 @@ export async function clearTimeStats(): Promise<void> {
 
 function normalizeSettings(settings: Partial<FocusSettings>): FocusSettings {
   return {
-    ...DEFAULT_SETTINGS,
-    ...settings,
     blacklist: uniqueDomains(settings.blacklist ?? DEFAULT_SETTINGS.blacklist).slice(0, RULE_ID_COUNT),
     whitelist: uniqueDomains(settings.whitelist ?? DEFAULT_SETTINGS.whitelist).slice(0, RULE_ID_COUNT),
-    trackingExclusions: uniqueDomains(settings.trackingExclusions ?? DEFAULT_SETTINGS.trackingExclusions),
     categories: {
       ...DEFAULT_SETTINGS.categories,
       ...(settings.categories ?? {})
-    }
+    },
+    dailyFocusGoalMinutes: settings.dailyFocusGoalMinutes ?? DEFAULT_SETTINGS.dailyFocusGoalMinutes,
+    defaultFocusMinutes: settings.defaultFocusMinutes ?? DEFAULT_SETTINGS.defaultFocusMinutes,
+    blockMode: settings.blockMode ?? DEFAULT_SETTINGS.blockMode
   };
 }

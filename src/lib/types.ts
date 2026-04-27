@@ -14,7 +14,6 @@ export type SiteCategory =
 export interface FocusSettings {
   blacklist: string[];
   whitelist: string[];
-  trackingExclusions: string[];
   categories: Record<string, SiteCategory>;
   dailyFocusGoalMinutes: number;
   defaultFocusMinutes: number;

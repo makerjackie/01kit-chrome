@@ -1,6 +1,6 @@
 import { TRACKER_TICK_ALARM } from "./constants";
-import { domainFromUrl, isExcludedDomain } from "./domain";
-import { getSettings, getTimeStats, getTrackerState, saveTimeStats, saveTrackerState } from "./storage";
+import { domainFromUrl } from "./domain";
+import { getTimeStats, getTrackerState, saveTimeStats, saveTrackerState } from "./storage";
 import { addDomainTime } from "./stats";
 import type { TrackerState } from "./types";
 
@@ -59,9 +59,6 @@ async function closeCurrentSegment(): Promise<void> {
   if (elapsed < MIN_SEGMENT_MS) return;
   if (elapsed > MAX_TRACKABLE_SEGMENT_MS) return;
 
-  const settings = await getSettings();
-  if (isExcludedDomain(state.domain, settings.trackingExclusions)) return;
-
   const stats = await getTimeStats();
   await saveTimeStats(addDomainTime(stats, state.domain, elapsed));
 }
@@ -80,9 +77,8 @@ async function getCurrentTrackableState(): Promise<TrackerState> {
 
   const [tab] = await chrome.tabs.query({ active: true, windowId: focusedWindow.id });
   const domain = domainFromUrl(tab?.url);
-  const settings = await getSettings();
 
-  if (!domain || isExcludedDomain(domain, settings.trackingExclusions)) {
+  if (!domain) {
     return { domain: null, startedAt: null, tabId: tab?.id ?? null, windowFocused: true, idle: false };
   }
 

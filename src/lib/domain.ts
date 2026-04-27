@@ -32,21 +32,10 @@ export function domainFromUrl(url?: string): string | null {
   }
 }
 
-export function domainMatches(domain: string, ruleDomain: string): boolean {
-  return domain === ruleDomain || domain.endsWith(`.${ruleDomain}`);
-}
-
 export function uniqueDomains(domains: string[]): string[] {
   return Array.from(new Set(domains.map(normalizeDomain).filter(Boolean) as string[])).sort();
 }
 
 export function stripWww(hostname: string): string {
   return hostname.replace(/^www\./, "");
-}
-
-export function isExcludedDomain(domain: string, exclusions: string[]): boolean {
-  return exclusions.some((item) => {
-    const normalized = normalizeDomain(item) ?? item.toLowerCase();
-    return domainMatches(domain, normalized);
-  });
 }

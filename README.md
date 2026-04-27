@@ -4,7 +4,10 @@
 
 - 教程：[用 AI 开发一个 Chrome 插件](./docs/ai-chrome-extension-guide.md)
 - 上架材料：[Chrome Web Store 上架材料](./docs/chrome-web-store-submission.md)
+- 更新日志：[CHANGELOG.md](./CHANGELOG.md)
+- 当前版本：0.1
 - 官网：`https://01kit-chrome.01mvp.com`
+- 官网更新日志：`https://01kit-chrome.01mvp.com/changelog`
 - 隐私说明：`https://01kit-chrome.01mvp.com/privacy`
 
 ## 本地开发

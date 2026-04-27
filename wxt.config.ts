@@ -6,6 +6,7 @@ export default defineConfig({
     name: "01Kit",
     short_name: "01Kit",
     version: "0.1.0",
+    version_name: "0.1",
     description: "专注模式、网站屏蔽、时间统计和本地生产力记录。",
     permissions: [
       "alarms",

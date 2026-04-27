@@ -3,6 +3,7 @@ import { useEffect } from "react";
 const downloadUrl = "/downloads/01kit-chrome.zip";
 const storeUrl = "https://chromewebstore.google.com/search/01Kit";
 const tutorialUrl = "https://www.01mvp.com/docs/mvp/ai-chrome-extension-guide";
+const currentVersion = "0.1";
 
 type Locale = "zh" | "en";
 type SiteVideo = {
@@ -23,6 +24,7 @@ const copy = {
       features: "功能",
       video: "视频",
       install: "安装",
+      changelog: "更新",
       guide: "教程",
       privacy: "隐私",
       language: "EN"
@@ -42,22 +44,15 @@ const copy = {
     },
     strip: ["专注计时", "网站屏蔽", "时间统计", "本地数据"],
     videos: {
-      eyebrow: "视频",
-      title: "先看一遍，再开始用",
-      lead: "快速演示看完整操作，Motion 动画看核心价值。当前页面展示中文版本。",
-      demo: {
-        label: "快速演示",
+      eyebrow: "演示视频",
+      title: "看一遍就会用",
+      lead: "开启专注、拦截分心网站、查看时间统计，完整流程都在这里。",
+      video: {
+        label: "01Kit 演示",
         title: "从开启专注到查看统计",
-        body: "节奏更快，适合在页面或发布材料里直接展示产品流程。",
+        body: "跟着视频走一遍，就可以开始用。",
         src: "/media/01kit-demo-zh.mp4",
         poster: "/media/01kit-demo-zh-poster.png"
-      },
-      motion: {
-        label: "Motion 动画",
-        title: "01Kit 能解决什么问题",
-        body: "同一套内容制作中英文两版，适合作为产品介绍视频。",
-        src: "/media/01kit-motion-zh.mp4",
-        poster: "/media/01kit-motion-zh-poster.png"
       }
     },
     features: {
@@ -67,7 +62,7 @@ const copy = {
         ["专注计时", "25/45/60 分钟预设，或自定义 1-240 分钟。一键开启，自动屏蔽分心网站。"],
         ["智能屏蔽", "黑名单拦截干扰源，白名单保护工作流。专注期间自动生效，结束后恢复访问。"],
         ["时间统计", "按域名记录停留时间，支持日/周/月视图。窗口失焦不计时，数据真实可靠。"],
-        ["本地存储", "所有数据保存在浏览器本地，不上传服务器。可排除敏感网站，一键清除记录。"]
+        ["本地存储", "所有数据保存在浏览器本地，不上传服务器。可以一键清除记录。"]
       ],
       noteLabel: "开发者",
       notePrefix: "想了解插件开发流程？查看",
@@ -77,7 +72,7 @@ const copy = {
     privacyBand: {
       eyebrow: "隐私承诺",
       title: "数据不出浏览器",
-      body: <>01Kit 需要全站点权限来识别域名、统计时间和执行屏蔽规则。<strong>所有操作都在本地完成</strong>，不读取页面内容，不使用同步存储，不上传任何数据到服务器。你可以随时排除敏感网站或清除历史记录。</>
+      body: <>01Kit 需要全站点权限来识别域名、统计时间和执行屏蔽规则。<strong>所有操作都在本地完成</strong>，不读取页面内容，不使用同步存储，不上传任何数据到服务器。你可以随时清除历史记录。</>
     },
     install: {
       eyebrow: "安装方式",
@@ -87,9 +82,31 @@ const copy = {
         ["离线安装包", <>不能访问商店时，下载离线包，打开 <code>chrome://extensions</code>，启用开发者模式后加载解压目录。</>, "下载离线包"]
       ]
     },
+    changelog: {
+      eyebrow: "更新日志",
+      title: `版本 ${currentVersion}`,
+      lead: "01Kit 的第一个版本，主线是本地优先的 Chrome 专注工具。",
+      back: "返回 01Kit",
+      releases: [
+        {
+          version: currentVersion,
+          date: "2026-04-27",
+          dateIso: "2026-04-27",
+          title: "第一个可用版本",
+          items: [
+            "专注计时支持 25/45/60 分钟预设，也可以自定义 1-240 分钟。",
+            "专注期间自动拦截黑名单网站，并保留白名单工作流。",
+            "按域名记录浏览时间，支持日、周、月视图。",
+            "统计、站点列表和设置保存在 Chrome 本地存储，不上传服务器。",
+            "官网提供演示视频、隐私说明和离线安装包入口。"
+          ]
+        }
+      ]
+    },
     footer: {
       maker: "01Kit by 01MVP",
       guide: "AI 开发教程",
+      changelog: "更新日志",
       privacy: "隐私说明"
     },
     privacy: {
@@ -98,9 +115,9 @@ const copy = {
       paragraphs: [
         "01Kit 不上传你的浏览记录、专注记录或站点配置。",
         "插件会在本地识别当前标签页域名，用于网站屏蔽和按域名聚合的时间统计。",
-        "插件使用 Chrome 本地存储保存时间统计、专注记录、黑名单、白名单、隐私排除列表和偏好设置，不使用同步存储。",
+        "插件使用 Chrome 本地存储保存时间统计、专注记录、黑名单、白名单和偏好设置，不使用同步存储。",
         "全站点权限只用于在本地识别当前域名和执行屏蔽规则，不读取页面正文、表单内容、Cookie、账号密码或个人通信内容，也不会向外发送数据。",
-        "你可以在插件设置页排除敏感网站，也可以清除全部统计数据。",
+        "你可以在插件设置页清除全部统计数据。",
         "01Kit 不出售、不转让、不共享用户数据，也不会把用户数据用于广告或再营销。",
         "离线安装包托管在本站，下载行为可能会被 Cloudflare 按常规方式记录访问日志。"
       ]
@@ -115,6 +132,7 @@ const copy = {
       features: "Features",
       video: "Videos",
       install: "Install",
+      changelog: "Changelog",
       guide: "Guide",
       privacy: "Privacy",
       language: "中文"
@@ -134,22 +152,15 @@ const copy = {
     },
     strip: ["Focus timer", "Site blocking", "Time stats", "Local data"],
     videos: {
-      eyebrow: "Videos",
-      title: "Watch the flow before you install",
-      lead: "The fast demo shows the product workflow. The motion video explains the core value. This page shows the English versions.",
-      demo: {
-        label: "Fast demo",
+      eyebrow: "Demo video",
+      title: "See how 01Kit works",
+      lead: "Start a focus session, block distracting sites, and review your browser time in one quick walkthrough.",
+      video: {
+        label: "01Kit demo",
         title: "Start focus, block distractions, review stats",
-        body: "A faster walkthrough for the website, launch posts, and store materials.",
+        body: "Watch the flow once, then start your own focus session.",
         src: "/media/01kit-demo-en.mp4",
         poster: "/media/01kit-demo-en-poster.png"
-      },
-      motion: {
-        label: "Motion video",
-        title: "What 01Kit helps you finish",
-        body: "The same story is available in Chinese and English for product introduction.",
-        src: "/media/01kit-motion-en.mp4",
-        poster: "/media/01kit-motion-en-poster.png"
       }
     },
     features: {
@@ -159,7 +170,7 @@ const copy = {
         ["Focus timer", "Use 25/45/60 minute presets or set any duration from 1 to 240 minutes. Start once and blocking turns on automatically."],
         ["Smart blocking", "Blocklist distracting sites and keep work sites open with an allowlist. Rules activate during focus and restore afterward."],
         ["Time stats", "See time by domain across day, week, and month views. Unfocused windows are not counted."],
-        ["Local storage", "Stats, lists, and settings stay in Chrome local storage. Exclude sensitive sites or clear history at any time."]
+        ["Local storage", "Stats, lists, and settings stay in Chrome local storage. Clear history at any time."]
       ],
       noteLabel: "Builder guide",
       notePrefix: "Want to see how the extension was built? Read the",
@@ -179,9 +190,31 @@ const copy = {
         ["Offline package", <>If the store is not available, download the package, open <code>chrome://extensions</code>, enable Developer mode, and load the extracted folder.</>, "Download package"]
       ]
     },
+    changelog: {
+      eyebrow: "Changelog",
+      title: `Version ${currentVersion}`,
+      lead: "The first 01Kit release focuses on local-first browser focus.",
+      back: "Back to 01Kit",
+      releases: [
+        {
+          version: currentVersion,
+          date: "Apr 27, 2026",
+          dateIso: "2026-04-27",
+          title: "First usable release",
+          items: [
+            "Focus timer with 25/45/60 minute presets and custom 1-240 minute sessions.",
+            "Blocklist enforcement during focus sessions while allowlisted work sites stay available.",
+            "Domain-level time stats across day, week, and month views.",
+            "Stats, site lists, and settings stay in Chrome local storage without uploads.",
+            "Product site includes the demo video, privacy page, and offline package link."
+          ]
+        }
+      ]
+    },
     footer: {
       maker: "01Kit by 01MVP",
       guide: "AI build guide",
+      changelog: "Changelog",
       privacy: "Privacy"
     },
     privacy: {
@@ -190,9 +223,9 @@ const copy = {
       paragraphs: [
         "01Kit does not upload your browsing history, focus records, or site lists.",
         "The extension identifies the current tab's domain locally for site blocking and domain-level time stats.",
-        "The extension stores time stats, focus records, blocklists, allowlists, privacy exclusions, and preferences in Chrome local storage. It does not use sync storage.",
+        "The extension stores time stats, focus records, blocklists, allowlists, and preferences in Chrome local storage. It does not use sync storage.",
         "All-site permission is used locally to identify the current domain and apply blocking rules. 01Kit does not read page body text, form content, cookies, passwords, or personal communications, and does not send browsing data out.",
-        "You can exclude sensitive sites in settings, and you can clear all stats at any time.",
+        "You can clear all stats at any time.",
         "01Kit does not sell, transfer, share, or use user data for advertising or remarketing.",
         "The offline package is hosted on this site. Cloudflare may record standard access logs for download requests."
       ]
@@ -202,25 +235,32 @@ const copy = {
 
 export default function App() {
   const locale = getLocale();
-  const isPrivacy = getPagePath(locale) === "/privacy";
+  const pagePath = getPagePath(locale);
+  const isPrivacy = pagePath === "/privacy";
+  const isChangelog = pagePath === "/changelog";
   const c = copy[locale];
 
   useEffect(() => {
     document.documentElement.lang = c.htmlLang;
-    document.title = isPrivacy ? `${c.privacy.title} - 01Kit` : c.title;
+    document.title = isPrivacy ? `${c.privacy.title} - 01Kit` : isChangelog ? `${c.changelog.title} - 01Kit` : c.title;
 
     const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
     if (description) {
       description.content = c.description;
     }
-  }, [c, isPrivacy]);
+  }, [c, isChangelog, isPrivacy]);
 
   if (isPrivacy) {
     return <Privacy locale={locale} />;
   }
 
+  if (isChangelog) {
+    return <Changelog locale={locale} />;
+  }
+
   const homePath = localizedPath(locale, "/");
   const privacyPath = localizedPath(locale, "/privacy");
+  const changelogPath = localizedPath(locale, "/changelog");
   const languagePath = localizedPath(locale === "zh" ? "en" : "zh", "/");
 
   return (
@@ -235,6 +275,7 @@ export default function App() {
             <a href="#features">{c.nav.features}</a>
             <a href="#video">{c.nav.video}</a>
             <a href="#install">{c.nav.install}</a>
+            <a href={changelogPath}>{c.nav.changelog}</a>
             <a href={tutorialUrl}>{c.nav.guide}</a>
             <a href={privacyPath}>{c.nav.privacy}</a>
             <a className="language-link" href={languagePath} lang={locale === "zh" ? "en" : "zh-CN"}>
@@ -318,10 +359,7 @@ export default function App() {
           <h2>{c.videos.title}</h2>
           <p>{c.videos.lead}</p>
         </div>
-        <div className="video-grid">
-          <VideoCard video={c.videos.demo} />
-          <VideoCard video={c.videos.motion} />
-        </div>
+        <VideoCard video={c.videos.video} />
       </section>
 
       <section className="features" id="features">
@@ -382,6 +420,7 @@ export default function App() {
       <footer>
         <span>{c.footer.maker}</span>
         <a href={tutorialUrl}>{c.footer.guide}</a>
+        <a href={changelogPath}>{c.footer.changelog}</a>
         <a href={privacyPath}>{c.footer.privacy}</a>
       </footer>
     </main>
@@ -400,6 +439,42 @@ function VideoCard({ video }: { video: SiteVideo }) {
         <source src={video.src} type="video/mp4" />
       </video>
     </article>
+  );
+}
+
+function Changelog({ locale }: { locale: Locale }) {
+  const c = copy[locale];
+  const homePath = localizedPath(locale, "/");
+  const languagePath = localizedPath(locale === "zh" ? "en" : "zh", "/changelog");
+
+  return (
+    <main className="content-page changelog">
+      <div className="page-actions">
+        <a href={homePath}>← {c.changelog.back}</a>
+        <a href={languagePath} lang={locale === "zh" ? "en" : "zh-CN"}>
+          {c.nav.language}
+        </a>
+      </div>
+      <p className="eyebrow">{c.changelog.eyebrow}</p>
+      <h1>{c.changelog.title}</h1>
+      <p className="page-lead">{c.changelog.lead}</p>
+      <div className="release-list">
+        {c.changelog.releases.map((release) => (
+          <article className="release-card" key={release.version}>
+            <div className="release-meta">
+              <span>{release.version}</span>
+              <time dateTime={release.dateIso}>{release.date}</time>
+            </div>
+            <h2>{release.title}</h2>
+            <ul>
+              {release.items.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </main>
   );
 }
 
@@ -437,7 +512,7 @@ function getPagePath(locale: Locale): string {
   return window.location.pathname;
 }
 
-function localizedPath(locale: Locale, path: "/" | "/privacy"): string {
+function localizedPath(locale: Locale, path: "/" | "/privacy" | "/changelog"): string {
   if (locale === "en") {
     return path === "/" ? "/en" : `/en${path}`;
   }

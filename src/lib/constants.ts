@@ -34,17 +34,9 @@ export const DEFAULT_WHITELIST = [
   "wxt.dev"
 ];
 
-export const DEFAULT_TRACKING_EXCLUSIONS = [
-  "accounts.google.com",
-  "bank",
-  "icloud.com",
-  "localhost"
-];
-
 export const DEFAULT_SETTINGS: FocusSettings = {
   blacklist: DEFAULT_BLACKLIST,
   whitelist: DEFAULT_WHITELIST,
-  trackingExclusions: DEFAULT_TRACKING_EXCLUSIONS,
   categories: {
     "bilibili.com": "video",
     "developer.chrome.com": "learn",
