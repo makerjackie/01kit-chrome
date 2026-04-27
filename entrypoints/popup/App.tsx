@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { DEFAULT_BLACKLIST, DEFAULT_WHITELIST, RULE_ID_COUNT } from "../../src/lib/constants";
 import { normalizeDomain } from "../../src/lib/domain";
 import { getFocusStatus, pauseFocusSession, resumeFocusSession, startFocusSession, stopFocusSession } from "../../src/lib/focus";
@@ -17,6 +17,7 @@ export default function App() {
   const [customMinutes, setCustomMinutes] = useState(25);
   const [domainInput, setDomainInput] = useState("");
   const [saving, setSaving] = useState(false);
+  const loadedDefaultMinutes = useRef(false);
 
   const effectiveMode = status?.session?.mode ?? status?.settings.blockMode;
   const list = effectiveMode === "whitelist"
@@ -32,7 +33,10 @@ export default function App() {
     const nextStatus = await getFocusStatus();
     const [stats, records] = await Promise.all([getTimeStats(), getFocusRecords()]);
     setStatus(nextStatus);
-    setCustomMinutes(nextStatus.settings.defaultFocusMinutes);
+    if (!loadedDefaultMinutes.current) {
+      setCustomMinutes(nextStatus.settings.defaultFocusMinutes);
+      loadedDefaultMinutes.current = true;
+    }
     setTopSites(getDomainStats(stats, nextStatus.settings, "today").slice(0, 5));
     setTodayMs(focusMsForDay(records, dateKey()));
   }
