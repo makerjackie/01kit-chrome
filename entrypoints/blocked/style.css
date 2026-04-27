@@ -1,0 +1,89 @@
+:root {
+  background: #101010;
+  color: #f6f4ee;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: #101010;
+}
+
+button {
+  min-height: 52px;
+  border: 1px solid #f6f4ee;
+  background: transparent;
+  color: #f6f4ee;
+  padding: 0 18px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f6f4ee;
+  color: #101010;
+}
+
+.blocked {
+  min-height: 100vh;
+  width: min(720px, calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  align-content: center;
+  gap: 22px;
+}
+
+.eyebrow,
+p,
+h1 {
+  margin: 0;
+}
+
+.eyebrow {
+  color: #cbc6b8;
+}
+
+h1 {
+  max-width: 10ch;
+  font-size: clamp(56px, 12vw, 128px);
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+.time {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(36px, 7vw, 72px);
+  font-weight: 900;
+}
+
+p {
+  color: #d8d2c2;
+  font-size: 18px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  max-width: 660px;
+}
+
+.back-button {
+  color: #d8d2c2;
+}
+
+.pause-button {
+  background: #f6f4ee;
+  color: #101010;
+}
+
+.pause-button:hover {
+  background: #d8d2c2;
+  color: #101010;
+}

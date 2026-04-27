@@ -1,0 +1,36 @@
+{
+  "name": "01kit-chrome",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "01Kit Chrome extension and product site.",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "sync:site-docs": "node scripts/sync-site-docs.mjs",
+    "video": "remotion render remotion/index.ts 01KitPromo site/public/media/01kit-promo.mp4 --codec=h264 --crf=24 --overwrite",
+    "video:poster": "remotion still remotion/index.ts 01KitPromo site/public/media/01kit-promo-poster.png --frame=120 --overwrite",
+    "build:site": "npm run sync:site-docs && vite build --config site/vite.config.ts",
+    "prepare:site": "npm run build && npm run zip && node scripts/copy-extension-zip.mjs",
+    "deploy:site": "npm run prepare:site && npm run build:site && wrangler deploy",
+    "check": "wxt prepare && tsc --noEmit && npm run build && npm run build:site"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.1.1",
+    "@wxt-dev/module-react": "^1.2.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "vite": "^7.2.7",
+    "wxt": "^0.20.25"
+  },
+  "devDependencies": {
+    "@remotion/cli": "^4.0.451",
+    "@types/node": "^24.10.4",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "remotion": "^4.0.451",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.80.0"
+  }
+}

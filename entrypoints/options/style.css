@@ -1,0 +1,299 @@
+:root {
+  color: #101010;
+  background: #f6f4ee;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f6f4ee;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button,
+input,
+select {
+  border: 1px solid #101010;
+  background: #fffdf7;
+  color: #101010;
+  min-height: 36px;
+}
+
+button {
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+button:hover,
+button.active,
+.segmented .active {
+  background: #101010;
+  color: #f6f4ee;
+}
+
+input,
+select {
+  padding: 0 10px;
+}
+
+.shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+}
+
+.topbar {
+  min-height: 160px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 3px solid #101010;
+  padding-bottom: 20px;
+}
+
+.topbar p,
+.note {
+  color: #59554d;
+}
+
+.topbar p,
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(40px, 7vw, 96px);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+.goal-box {
+  border: 2px solid #101010;
+  background: #101010;
+  color: #f6f4ee;
+  min-width: 220px;
+  padding: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+.goal-box span,
+.goal-box small {
+  color: #cbc6b8;
+}
+
+.goal-box strong {
+  font-size: 30px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.grid.two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.panel {
+  border: 1px solid #101010;
+  background: #fffdf7;
+  padding: 18px;
+  margin-top: 16px;
+}
+
+.grid .panel {
+  margin-top: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.segmented,
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.note {
+  font-size: 14px;
+  line-height: 1.7;
+  margin-top: 10px;
+}
+
+.add-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chips span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #101010;
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+.chips span button {
+  border: 0;
+  min-height: 20px;
+  padding: 0 4px;
+}
+
+.stats-table,
+.record-list {
+  display: grid;
+  gap: 10px;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.1fr) minmax(180px, 2fr) 120px;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-row > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stat-row select {
+  min-height: 30px;
+  max-width: 86px;
+}
+
+.bar {
+  height: 12px;
+  border: 1px solid #101010;
+  background: #f6f4ee;
+}
+
+.bar span {
+  display: block;
+  height: 100%;
+  background: #101010;
+}
+
+.record-list div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  border-bottom: 1px solid #ddd6c8;
+  padding-bottom: 8px;
+}
+
+.record-list small {
+  grid-column: 1 / -1;
+  color: #59554d;
+}
+
+.calendar {
+  height: 220px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.calendar div {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.calendar div div {
+  height: 140px;
+  border: 1px solid #101010;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  padding: 3px;
+}
+
+.calendar i {
+  display: block;
+  width: 100%;
+  background: #101010;
+}
+
+@media (max-width: 760px) {
+  .shell {
+    width: min(100% - 20px, 1120px);
+    padding-top: 16px;
+  }
+
+  .topbar,
+  .grid.two,
+  .form-grid,
+  .stat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    display: grid;
+    min-height: auto;
+  }
+
+  .goal-box {
+    min-width: 0;
+  }
+}

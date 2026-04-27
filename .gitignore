@@ -1,0 +1,34 @@
+# dependencies
+node_modules/
+
+# local environment and secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+*.pem
+*.key
+
+# generated output
+dist/
+output/
+.output/
+.wxt/
+.wrangler/
+site/dist/
+site/public/downloads/
+*.zip
+*.crx
+
+# test and browser artifacts
+coverage/
+playwright-report/
+test-results/
+output/playwright/
+.playwright-cli/
+
+# editor and OS files
+.vscode/
+*.log
+.DS_Store

@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "01kit-chrome",
+  "account_id": "4103ce09aa914f8f387eb86b66d23376",
+  "main": "./site/worker.ts",
+  "compatibility_date": "2026-04-26",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "01kit-chrome.01mvp.com",
+      "zone_name": "01mvp.com",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./site/dist",
+    "not_found_handling": "single-page-application"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

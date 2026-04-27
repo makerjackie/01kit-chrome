@@ -1,0 +1,277 @@
+:root {
+  color: #101010;
+  background: #f6f4ee;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 380px;
+  min-height: 560px;
+  background: #f6f4ee;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 1px solid #141414;
+  background: #f6f4ee;
+  color: #101010;
+  min-height: 36px;
+  padding: 0 10px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #101010;
+  color: #f6f4ee;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+input {
+  width: 100%;
+  min-height: 36px;
+  border: 1px solid #141414;
+  background: #fffdf7;
+  color: #101010;
+  padding: 0 10px;
+}
+
+.popup {
+  padding: 14px;
+}
+
+.hero {
+  border: 2px solid #101010;
+  background: #101010;
+  color: #f6f4ee;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: #cbc6b8;
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 15px;
+}
+
+.timer {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 26px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.panel {
+  border: 1px solid #101010;
+  margin-top: 10px;
+  padding: 12px;
+  background: #fffdf7;
+}
+
+.actions {
+  display: grid;
+  gap: 8px;
+}
+
+.actions.three {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.primary {
+  background: #101010;
+  color: #f6f4ee;
+}
+
+.start-button {
+  width: 100%;
+  min-height: 52px;
+  font-size: 18px;
+}
+
+.preset-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.preset-row .active {
+  background: #101010;
+  color: #f6f4ee;
+}
+
+.paused-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #101010;
+  background: #f6f4ee;
+  padding: 8px;
+  margin: 8px 0;
+}
+
+.paused-box span {
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.danger {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.custom-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.start-custom {
+  align-items: center;
+}
+
+.start-custom span {
+  color: #5b574f;
+  font-size: 13px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(2, auto);
+  border: 1px solid #101010;
+}
+
+.segmented button {
+  border: 0;
+  min-height: 28px;
+  padding: 0 8px;
+}
+
+.segmented .active {
+  background: #101010;
+  color: #f6f4ee;
+}
+
+.template-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.template-row button {
+  min-height: 30px;
+  padding: 0 8px;
+}
+
+.domain-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.domain-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #101010;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.domain-list span button {
+  border: 0;
+  min-height: 18px;
+  padding: 0 3px;
+}
+
+.domain-list small {
+  color: #5b574f;
+}
+
+.progress,
+.goal {
+  height: 8px;
+  border: 1px solid #101010;
+  margin: 8px 0;
+  background: #f6f4ee;
+}
+
+.progress span,
+.goal span {
+  display: block;
+  height: 100%;
+  background: #101010;
+}
+
+.site-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.site-list div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.site-list span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.muted {
+  color: #5b574f;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.options {
+  width: 100%;
+  margin-top: 10px;
+  background: #f6f4ee;
+}
