@@ -21,7 +21,7 @@ const pausePresets = [1, 5, 15];
 const supportLinks = [
   { label: "反馈", url: FEEDBACK_URL },
   { label: "GitHub", url: REPOSITORY_URL },
-  { label: "教程", url: EXTENSION_TUTORIAL_URL }
+  { label: "说明", url: EXTENSION_TUTORIAL_URL }
 ];
 
 export default function App() {

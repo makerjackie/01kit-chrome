@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 const downloadUrl = "/downloads/01kit-chrome.zip";
 const storeUrl = "https://chromewebstore.google.com/search/01Kit";
-const tutorialUrl = "https://www.01mvp.com/docs/mvp/ai-chrome-extension-guide";
+const tutorialUrl = "/docs/01kit-guide.md";
 const currentVersion = "0.1";
 
 type Locale = "zh" | "en";
@@ -25,7 +25,7 @@ const copy = {
       video: "视频",
       install: "安装",
       changelog: "更新",
-      guide: "教程",
+      guide: "使用说明",
       privacy: "隐私",
       language: "EN"
     },
@@ -64,10 +64,10 @@ const copy = {
         ["时间统计", "按域名记录停留时间，支持日/周/月视图。窗口失焦不计时，数据真实可靠。"],
         ["本地存储", "所有数据保存在浏览器本地，不上传服务器。可以一键清除记录。"]
       ],
-      noteLabel: "开发者",
-      notePrefix: "想了解插件开发流程？查看",
-      noteLink: "配套教程",
-      noteSuffix: "，从产品设计到发布上架的完整实战。"
+      noteLabel: "使用说明",
+      notePrefix: "第一次使用？查看",
+      noteLink: "安装和使用说明",
+      noteSuffix: "，快速了解安装、专注、屏蔽和数据导出。"
     },
     privacyBand: {
       eyebrow: "隐私承诺",
@@ -105,7 +105,7 @@ const copy = {
     },
     footer: {
       maker: "01Kit by 01MVP",
-      guide: "AI 开发教程",
+      guide: "使用说明",
       changelog: "更新日志",
       privacy: "隐私说明"
     },
@@ -172,10 +172,10 @@ const copy = {
         ["Time stats", "See time by domain across day, week, and month views. Unfocused windows are not counted."],
         ["Local storage", "Stats, lists, and settings stay in Chrome local storage. Clear history at any time."]
       ],
-      noteLabel: "Builder guide",
-      notePrefix: "Want to see how the extension was built? Read the",
-      noteLink: "full guide",
-      noteSuffix: " from product design to Chrome Web Store submission."
+      noteLabel: "Guide",
+      notePrefix: "New to 01Kit? Read the",
+      noteLink: "setup and usage guide",
+      noteSuffix: " for install, focus mode, blocking, and data export."
     },
     privacyBand: {
       eyebrow: "Privacy",
@@ -213,7 +213,7 @@ const copy = {
     },
     footer: {
       maker: "01Kit by 01MVP",
-      guide: "AI build guide",
+      guide: "Guide",
       changelog: "Changelog",
       privacy: "Privacy"
     },

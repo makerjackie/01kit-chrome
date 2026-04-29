@@ -2,7 +2,7 @@
 
 01Kit 是一个本地优先的 Chrome 生产力插件，包含专注模式、网站屏蔽、时间统计、专注记录、每日目标、快捷键、通知和数据导出。
 
-- 教程：[用 AI 开发一个 Chrome 插件](./docs/ai-chrome-extension-guide.md)
+- 使用说明：[01Kit 安装和使用说明](./docs/01kit-guide.md)
 - 上架材料：[Chrome Web Store 上架材料](./docs/chrome-web-store-submission.md)
 - 更新日志：[CHANGELOG.md](./CHANGELOG.md)
 - 当前版本：0.1

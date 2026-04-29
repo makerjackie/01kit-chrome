@@ -13,7 +13,7 @@ export const TRACKER_MAX_DAYS = 120;
 export const FOCUS_RECORD_MAX_COUNT = 2000;
 export const REPOSITORY_URL = "https://github.com/makerjackie/01kit-chrome";
 export const FEEDBACK_URL = "https://github.com/makerjackie/01kit-chrome/issues";
-export const EXTENSION_TUTORIAL_URL = "https://www.01mvp.com/docs/mvp/ai-chrome-extension-guide";
+export const EXTENSION_TUTORIAL_URL = "https://01kit-chrome.01mvp.com/docs/01kit-guide.md";
 export const AUTHOR_EMAIL = "makerjackie@qq.com";
 
 export const DEFAULT_BLACKLIST = [

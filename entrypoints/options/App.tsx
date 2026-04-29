@@ -30,7 +30,7 @@ const categories: { value: SiteCategory; label: string }[] = [
 const supportLinks = [
   { label: "问题反馈", url: FEEDBACK_URL },
   { label: "GitHub", url: REPOSITORY_URL },
-  { label: "插件教程", url: EXTENSION_TUTORIAL_URL }
+  { label: "使用说明", url: EXTENSION_TUTORIAL_URL }
 ];
 
 export default function App() {
@@ -552,7 +552,7 @@ export default function App() {
             <div className="panel-head">
               <div>
                 <h2>帮助</h2>
-                <p className="panel-subtitle">遇到问题可以提交反馈，也可以查看源码和插件教程。</p>
+                <p className="panel-subtitle">遇到问题可以提交反馈，也可以查看使用说明和源码。</p>
               </div>
             </div>
             <div className="help-actions">
