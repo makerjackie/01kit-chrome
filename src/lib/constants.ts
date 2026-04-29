@@ -2,12 +2,15 @@ import type { FocusSettings, TrackerState } from "./types";
 
 export const APP_NAME = "01Kit";
 export const RULE_ID_BASE = 1000;
+export const GLOBAL_RULE_ID_BASE = 2000;
+export const GLOBAL_ALLOW_RULE_ID_BASE = 3000;
 export const RULE_ID_COUNT = 400;
 export const FOCUS_END_ALARM = "01kit-focus-end";
 export const FOCUS_PAUSE_END_ALARM = "01kit-focus-pause-end";
 export const TRACKER_TICK_ALARM = "01kit-tracker-tick";
 export const DEFAULT_FOCUS_MINUTES = 25;
 export const TRACKER_MAX_DAYS = 120;
+export const FOCUS_RECORD_MAX_COUNT = 2000;
 export const REPOSITORY_URL = "https://github.com/makerjackie/01kit-chrome";
 export const FEEDBACK_URL = "https://github.com/makerjackie/01kit-chrome/issues";
 export const EXTENSION_TUTORIAL_URL = "https://www.01mvp.com/docs/mvp/ai-chrome-extension-guide";
@@ -35,13 +38,16 @@ export const DEFAULT_WHITELIST = [
 ];
 
 export const DEFAULT_SETTINGS: FocusSettings = {
+  globalBlacklist: [],
   blacklist: DEFAULT_BLACKLIST,
   whitelist: DEFAULT_WHITELIST,
   categories: {
     "bilibili.com": "video",
+    "douyin.com": "entertainment",
     "developer.chrome.com": "learn",
     "github.com": "work",
     "reddit.com": "social",
+    "tiktok.com": "entertainment",
     "x.com": "social",
     "youtube.com": "video",
     "zhihu.com": "news"

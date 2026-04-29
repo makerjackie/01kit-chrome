@@ -6,12 +6,14 @@ export type SiteCategory =
   | "work"
   | "learn"
   | "social"
+  | "entertainment"
   | "video"
   | "news"
   | "shopping"
   | "other";
 
 export interface FocusSettings {
+  globalBlacklist: string[];
   blacklist: string[];
   whitelist: string[];
   categories: Record<string, SiteCategory>;
@@ -45,6 +47,15 @@ export interface FocusRecord {
 
 export interface TimeStats {
   days: Record<string, Record<string, number>>;
+}
+
+export interface TimeSegment {
+  id: string;
+  day: string;
+  domain: string;
+  startedAt: number;
+  endedAt: number;
+  ms: number;
 }
 
 export interface TrackerState {

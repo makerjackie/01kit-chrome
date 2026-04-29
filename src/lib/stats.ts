@@ -3,10 +3,14 @@ import { dateKey, rangeKeys } from "./time";
 import type { DomainStat, FocusRecord, FocusSettings, SiteCategory, StatsRange, TimeStats } from "./types";
 
 export function addDomainTime(stats: TimeStats, domain: string, ms: number, now = Date.now()): TimeStats {
-  const key = dateKey(now);
-  const day = stats.days[key] ?? {};
-  day[domain] = (day[domain] ?? 0) + ms;
-  stats.days[key] = day;
+  if (!domain || ms <= 0) return stats;
+
+  const startedAt = now - ms;
+  for (const segment of splitDurationByDay(startedAt, now)) {
+    const day = stats.days[segment.day] ?? {};
+    day[domain] = (day[domain] ?? 0) + segment.ms;
+    stats.days[segment.day] = day;
+  }
   pruneStats(stats);
   return stats;
 }
@@ -42,6 +46,7 @@ export function focusMsForDay(records: FocusRecord[], dayKey: string): number {
 
 export function autoCategory(domain: string): SiteCategory {
   if (/(youtube|bilibili|douyin|tiktok|netflix|video)/.test(domain)) return "video";
+  if (/(game|steam|epicgames|twitch|spotify|music|movie|anime)/.test(domain)) return "entertainment";
   if (/(x\.com|twitter|reddit|weibo|facebook|instagram|threads)/.test(domain)) return "social";
   if (/(news|nytimes|cnn|bbc|zhihu|medium)/.test(domain)) return "news";
   if (/(github|notion|linear|figma|vercel|cloudflare|docs|dev)/.test(domain)) return "work";
@@ -56,4 +61,31 @@ function pruneStats(stats: TimeStats): void {
   for (const key of stale) {
     delete stats.days[key];
   }
+}
+
+function splitDurationByDay(startedAt: number, endedAt: number): { day: string; ms: number }[] {
+  const segments: { day: string; ms: number }[] = [];
+  let cursor = startedAt;
+
+  while (cursor < endedAt) {
+    const nextDay = nextStartOfDay(cursor);
+    const segmentEnd = Math.min(endedAt, nextDay);
+    const ms = Math.max(0, segmentEnd - cursor);
+    if (ms > 0) {
+      segments.push({
+        day: dateKey(cursor),
+        ms
+      });
+    }
+    cursor = segmentEnd;
+  }
+
+  return segments;
+}
+
+function nextStartOfDay(timestamp: number): number {
+  const date = new Date(timestamp);
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() + 1);
+  return date.getTime();
 }

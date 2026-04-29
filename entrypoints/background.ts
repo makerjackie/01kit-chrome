@@ -4,6 +4,8 @@ import {
   TRACKER_TICK_ALARM
 } from "../src/lib/constants";
 import {
+  allowGlobalBlacklistUrlOnce,
+  clearGlobalBlacklistAllow,
   pauseFocusSession,
   refreshBlockingRules,
   startFocusSession,
@@ -53,6 +55,14 @@ export default defineBackground(() => {
     if (changeInfo.url || changeInfo.status === "complete") {
       void syncActiveTracking("tab-updated");
     }
+
+    if (changeInfo.status === "complete") {
+      void clearGlobalBlacklistAllow(_tabId);
+    }
+  });
+
+  chrome.tabs.onRemoved.addListener((tabId: number) => {
+    void clearGlobalBlacklistAllow(tabId);
   });
 
   chrome.windows.onFocusChanged.addListener((windowId: number) => {
@@ -81,6 +91,17 @@ export default defineBackground(() => {
         await pauseFocusSession(5);
       }
     })();
+  });
+
+  chrome.runtime.onMessage.addListener((message: { type?: string; url?: string }, sender: any, sendResponse: (response: { ok: boolean }) => void) => {
+    if (message?.type !== "ALLOW_GLOBAL_BLACKLIST_URL_ONCE" || !message.url || !sender.tab?.id) {
+      return false;
+    }
+
+    void allowGlobalBlacklistUrlOnce(sender.tab.id, message.url)
+      .then((ok) => sendResponse({ ok }))
+      .catch(() => sendResponse({ ok: false }));
+    return true;
   });
 
   void setupTracker();

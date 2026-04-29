@@ -1,4 +1,4 @@
-import type { DomainStat, FocusRecord, TimeStats } from "./types";
+import type { DomainStat, FocusRecord, FocusSettings, TimeSegment, TimeStats } from "./types";
 import { formatCompactDuration } from "./time";
 
 export function downloadText(filename: string, content: string, mime = "text/plain;charset=utf-8"): void {
@@ -11,8 +11,15 @@ export function downloadText(filename: string, content: string, mime = "text/pla
   URL.revokeObjectURL(url);
 }
 
-export function statsToJson(stats: TimeStats, records: FocusRecord[]): string {
-  return JSON.stringify({ stats, focusRecords: records }, null, 2);
+export function statsToJson(stats: TimeStats, records: FocusRecord[], settings?: FocusSettings, timelineSegments?: TimeSegment[]): string {
+  return JSON.stringify({
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    settings,
+    stats,
+    focusRecords: records,
+    timelineSegments
+  }, null, 2);
 }
 
 export function domainStatsToCsv(rows: DomainStat[]): string {

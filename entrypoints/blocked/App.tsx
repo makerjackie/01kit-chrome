@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { domainFromUrl } from "../../src/lib/domain";
 import { getFocusStatus, getRandomQuote, pauseFocusSession } from "../../src/lib/focus";
 import { formatDuration } from "../../src/lib/time";
 import type { FocusStatus } from "../../src/lib/types";
@@ -20,6 +21,11 @@ function getBlockedUrl(): string | null {
   } catch {
     return null;
   }
+}
+
+function getBlockReason(): "focus" | "global" {
+  const reason = new URLSearchParams(window.location.search).get("reason");
+  return reason === "global" ? "global" : "focus";
 }
 
 async function closeCurrentTab() {
@@ -47,8 +53,13 @@ async function leaveBlockedPage() {
 
 export default function App() {
   const [status, setStatus] = useState<FocusStatus | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [opening, setOpening] = useState(false);
+  const [error, setError] = useState("");
   const quote = useMemo(() => getRandomQuote(), []);
   const blockedUrl = useMemo(() => getBlockedUrl(), []);
+  const blockReason = useMemo(() => getBlockReason(), []);
+  const blockedDomain = useMemo(() => domainFromUrl(blockedUrl ?? undefined), [blockedUrl]);
 
   async function reload() {
     setStatus(await getFocusStatus());
@@ -69,6 +80,72 @@ export default function App() {
     }
 
     await leaveBlockedPage();
+  }
+
+  async function openGlobalBlockedUrl() {
+    if (!blockedUrl) {
+      await leaveBlockedPage();
+      return;
+    }
+
+    setOpening(true);
+    setError("");
+    try {
+      const response = await chrome.runtime.sendMessage({
+        type: "ALLOW_GLOBAL_BLACKLIST_URL_ONCE",
+        url: blockedUrl
+      });
+
+      if (!response?.ok) {
+        setError("这次没有打开成功，可以回到上一页后再试一次。");
+        setOpening(false);
+        return;
+      }
+
+      window.location.replace(blockedUrl);
+    } catch {
+      setError("这次没有打开成功，可以回到上一页后再试一次。");
+      setOpening(false);
+    }
+  }
+
+  if (blockReason === "global") {
+    return (
+      <main className="blocked global-blocked">
+        <section className="focus-copy">
+          <p className="eyebrow">01Kit · 全局黑名单</p>
+          <h1>停一下</h1>
+          <p className="quote">
+            {blockedDomain ? `${blockedDomain} 在全局黑名单里。` : "这个网站在全局黑名单里。"}
+            先停一下，确认它现在确实值得占用注意力。
+          </p>
+        </section>
+
+        <section className="focus-panel" aria-label="全局黑名单确认">
+          <div className="time-block">
+            <span>即将打开</span>
+            <strong className="blocked-domain">{blockedDomain ?? "未知网站"}</strong>
+          </div>
+
+          <div className="actions">
+            <button className="back-button" onClick={() => void leaveBlockedPage()}>离开这个页面</button>
+            <div className="confirm-group">
+              <p>如果只是顺手点开，先回去。确实需要打开时，再确认一次。</p>
+              {!confirming ? (
+                <button className="confirm-button" onClick={() => setConfirming(true)}>
+                  我确实要打开
+                </button>
+              ) : (
+                <button className="confirm-button danger" disabled={opening} onClick={() => void openGlobalBlockedUrl()}>
+                  {opening ? "正在打开" : "确认打开"}
+                </button>
+              )}
+              {error ? <p className="error-text">{error}</p> : null}
+            </div>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   if (!status?.session) {

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AUTHOR_EMAIL,
-  DEFAULT_BLACKLIST,
-  DEFAULT_WHITELIST,
   EXTENSION_TUTORIAL_URL,
   FEEDBACK_URL,
   REPOSITORY_URL,
@@ -11,10 +9,12 @@ import {
 import { normalizeDomain } from "../../src/lib/domain";
 import { getFocusStatus, pauseFocusSession, resumeFocusSession, startFocusSession, stopFocusSession } from "../../src/lib/focus";
 import { openExternalUrl } from "../../src/lib/links";
-import { getFocusRecords, getTimeStats, saveSettings } from "../../src/lib/storage";
-import { getDomainStats, focusMsForDay } from "../../src/lib/stats";
-import { clampMinutes, dateKey, formatCompactDuration, formatDuration } from "../../src/lib/time";
-import type { FocusMode, FocusStatus } from "../../src/lib/types";
+import { getTimeStats, getTrackerState, saveSettings } from "../../src/lib/storage";
+import { getDomainStats } from "../../src/lib/stats";
+import { getTimelineSegmentsForDay } from "../../src/lib/timeline-db";
+import { buildTimelineView, formatClock, IDLE_TIMELINE_COLOR, OTHER_TIMELINE_COLOR, withActiveTimelineSegment } from "../../src/lib/timeline-view";
+import { clampMinutes, formatCompactDuration, formatDuration } from "../../src/lib/time";
+import type { FocusMode, FocusStatus, TimeSegment } from "../../src/lib/types";
 
 const presets = [25, 45, 60];
 const pausePresets = [1, 5, 15];
@@ -26,8 +26,9 @@ const supportLinks = [
 
 export default function App() {
   const [status, setStatus] = useState<FocusStatus | null>(null);
-  const [todayMs, setTodayMs] = useState(0);
+  const [todayBrowsingMs, setTodayBrowsingMs] = useState(0);
   const [topSites, setTopSites] = useState<{ domain: string; ms: number }[]>([]);
+  const [timelineSegments, setTimelineSegments] = useState<TimeSegment[]>([]);
   const [customMinutes, setCustomMinutes] = useState(25);
   const [domainInput, setDomainInput] = useState("");
   const [saving, setSaving] = useState(false);
@@ -41,19 +42,24 @@ export default function App() {
   const remaining = status?.remainingMs ?? 0;
   const selectedMinutes = clampMinutes(customMinutes);
   const pausedMs = status?.session?.pausedUntil ? Math.max(0, status.session.pausedUntil - (status?.now ?? Date.now())) : 0;
-  const goalMs = (status?.settings.dailyFocusGoalMinutes ?? 120) * 60_000;
-  const goalPct = goalMs > 0 ? Math.min(100, Math.round((todayMs / goalMs) * 100)) : 0;
+  const timeline = useMemo(() => buildTimelineView(timelineSegments), [timelineSegments]);
 
   async function reload() {
-    const nextStatus = await getFocusStatus();
-    const [stats, records] = await Promise.all([getTimeStats(), getFocusRecords()]);
+    const [nextStatus, stats, nextTimelineSegments, trackerState] = await Promise.all([
+      getFocusStatus(),
+      getTimeStats(),
+      getTimelineSegmentsForDay(),
+      getTrackerState()
+    ]);
+    const todayRows = getDomainStats(stats, nextStatus.settings, "today");
     setStatus(nextStatus);
     if (!loadedDefaultMinutes.current) {
       setCustomMinutes(nextStatus.settings.defaultFocusMinutes);
       loadedDefaultMinutes.current = true;
     }
-    setTopSites(getDomainStats(stats, nextStatus.settings, "today").slice(0, 5));
-    setTodayMs(focusMsForDay(records, dateKey()));
+    setTopSites(todayRows.slice(0, 5));
+    setTodayBrowsingMs(todayRows.reduce((total, row) => total + row.ms, 0));
+    setTimelineSegments(withActiveTimelineSegment(nextTimelineSegments, trackerState, nextStatus.now));
   }
 
   useEffect(() => {
@@ -109,16 +115,15 @@ export default function App() {
     setStatus({ ...status, settings });
   }
 
-  async function applyTemplate(kind: "common" | "work") {
-    if (!status) return;
-    const settings = { ...status.settings };
-    if (kind === "common") {
-      settings.blacklist = Array.from(new Set([...settings.blacklist, ...DEFAULT_BLACKLIST])).sort();
-    } else {
-      settings.whitelist = Array.from(new Set([...settings.whitelist, ...DEFAULT_WHITELIST])).sort();
-    }
-    await saveSettings(settings);
-    setStatus({ ...status, settings });
+  function openTodayStats() {
+    const url = chrome.runtime.getURL("options.html#time-stats");
+    void chrome.tabs.create({ url });
+  }
+
+  function openRuleSettings() {
+    const section = effectiveMode === "whitelist" ? "whitelist" : "blacklist";
+    const url = chrome.runtime.getURL(`options.html#${section}`);
+    void chrome.tabs.create({ url });
   }
 
   return (
@@ -209,12 +214,8 @@ export default function App() {
           />
           <button disabled={list.length >= RULE_ID_COUNT} onClick={addDomain}>添加</button>
         </div>
-        <div className="template-row">
-          <button onClick={() => applyTemplate("common")}>常见干扰</button>
-          <button onClick={() => applyTemplate("work")}>工作白名单</button>
-        </div>
         <div className="domain-list">
-          {list.slice(0, 8).map((domain) => (
+          {list.slice(0, 3).map((domain) => (
             <span key={domain}>
               {domain}
               <button aria-label={`删除 ${domain}`} onClick={() => removeDomain(domain)}>
@@ -223,17 +224,22 @@ export default function App() {
             </span>
           ))}
           <small>{list.length} / {RULE_ID_COUNT}</small>
-          {list.length > 8 ? <small>还有 {list.length - 8} 个，在设置页管理</small> : null}
+          {list.length > 3 ? (
+            <small>
+              还有 {list.length - 3} 个，
+              <button className="domain-list-link" onClick={openRuleSettings}>在设置页管理</button>
+            </small>
+          ) : null}
         </div>
       </section>
 
       <section className="panel stats">
         <div className="section-head">
-          <h2>今日</h2>
-          <span>{formatCompactDuration(todayMs)} / {formatCompactDuration(goalMs)}</span>
-        </div>
-        <div className="goal">
-          <span style={{ width: `${goalPct}%` }} />
+          <h2>今日浏览</h2>
+          <div className="stats-head-actions">
+            <span>{formatCompactDuration(todayBrowsingMs)}</span>
+            <button onClick={openTodayStats}>时间统计</button>
+          </div>
         </div>
         {topSites.length > 0 ? (
           <div className="site-list">
@@ -247,9 +253,55 @@ export default function App() {
         ) : (
           <p className="muted">今天还没有可展示的访问记录。</p>
         )}
+        {timeline.blocks.length > 0 ? (
+          <div className="popup-timeline" aria-label="今日浏览时间线">
+            <div className="timeline-axis">
+              <span>{formatClock(timeline.startedAt)}</span>
+              <span>{formatClock(timeline.endedAt)}</span>
+            </div>
+            <div className="timeline-track">
+              {timeline.blocks.map((block) => (
+                <button
+                  type="button"
+                  aria-label={block.tooltip}
+                  data-tooltip={block.tooltip}
+                  data-tooltip-align={block.tooltipAlign}
+                  title={block.tooltip}
+                  key={block.id}
+                  className={`timeline-block ${block.kind === "idle" ? "idle" : ""}`}
+                  style={{
+                    left: `${block.leftPct}%`,
+                    width: `${block.widthPct}%`,
+                    background: block.color
+                  }}
+                />
+              ))}
+            </div>
+            <div className="timeline-legend">
+              {timeline.legend.slice(0, 4).map((item) => (
+                <span key={item.domain}>
+                  <i style={{ background: item.color }} />
+                  {item.domain}
+                </span>
+              ))}
+              {timeline.hasOther ? (
+                <span>
+                  <i style={{ background: OTHER_TIMELINE_COLOR }} />
+                  其他
+                </span>
+              ) : null}
+              {timeline.hasIdle ? (
+                <span>
+                  <i className="idle" style={{ background: IDLE_TIMELINE_COLOR }} />
+                  未统计
+                </span>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
       </section>
 
-      <button className="options" onClick={() => chrome.runtime.openOptionsPage()}>
+      <button className="options" onClick={openRuleSettings}>
         打开完整设置
       </button>
 

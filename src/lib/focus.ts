@@ -2,18 +2,20 @@ import {
   DEFAULT_FOCUS_MINUTES,
   FOCUS_END_ALARM,
   FOCUS_PAUSE_END_ALARM,
+  GLOBAL_ALLOW_RULE_ID_BASE,
+  GLOBAL_RULE_ID_BASE,
   QUOTES,
   RULE_ID_BASE,
   RULE_ID_COUNT
 } from "./constants";
-import { uniqueDomains } from "./domain";
+import { domainFromUrl, uniqueDomains } from "./domain";
 import {
   addFocusRecord,
   getFocusSession,
   getSettings,
   saveFocusSession
 } from "./storage";
-import type { FocusMode, FocusSession, FocusStatus } from "./types";
+import type { FocusMode, FocusSession, FocusSettings, FocusStatus } from "./types";
 
 export async function getFocusStatus(now = Date.now()): Promise<FocusStatus> {
   const settings = await getSettings();
@@ -66,7 +68,7 @@ export async function pauseFocusSession(minutes: number): Promise<void> {
   session.pauseStartedAt = session.pauseStartedAt ?? now;
   session.pausedUntil = now + Math.max(1, Math.round(minutes)) * 60_000;
   await saveFocusSession(session);
-  await clearBlockingRules();
+  await refreshBlockingRules();
   await chrome.alarms.create(FOCUS_PAUSE_END_ALARM, { when: session.pausedUntil });
 }
 
@@ -112,7 +114,7 @@ export async function stopFocusSession(completed = false): Promise<void> {
   await saveFocusSession(null);
   await chrome.alarms.clear(FOCUS_END_ALARM);
   await chrome.alarms.clear(FOCUS_PAUSE_END_ALARM);
-  await clearBlockingRules();
+  await refreshBlockingRules();
 
   if (completed) {
     await chrome.notifications.create(`01kit-focus-${session.id}`, {
@@ -131,12 +133,12 @@ export async function refreshBlockingRules(): Promise<void> {
   if (!session) {
     const staleSession = await getFocusSession();
     if (staleSession) await stopFocusSession(true);
-    else await clearBlockingRules();
+    else await updateBlockingRules(buildGlobalRules(status.settings));
     return;
   }
 
   if (status.paused) {
-    await clearBlockingRules();
+    await updateBlockingRules(buildGlobalRules(status.settings));
     return;
   }
 
@@ -152,16 +154,43 @@ export async function refreshBlockingRules(): Promise<void> {
 
   await saveFocusSession(updatedSession);
 
-  const rules = buildRules(updatedSession);
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: ruleIds(),
-    addRules: rules
-  });
+  await updateBlockingRules([
+    ...buildGlobalRules(status.settings),
+    ...buildFocusRules(updatedSession)
+  ]);
 }
 
 export async function clearBlockingRules(): Promise<void> {
-  await chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: ruleIds()
+  await updateBlockingRules([]);
+}
+
+export async function allowGlobalBlacklistUrlOnce(tabId: number, url: string): Promise<boolean> {
+  const domain = domainFromUrl(url);
+  if (!domain) return false;
+
+  const ruleId = allowRuleIdForTab(tabId);
+  await chrome.declarativeNetRequest.updateSessionRules({
+    removeRuleIds: [ruleId],
+    addRules: [
+      {
+        id: ruleId,
+        priority: 10,
+        action: { type: "allow" },
+        condition: {
+          requestDomains: [domain],
+          resourceTypes: ["main_frame"],
+          tabIds: [tabId]
+        }
+      }
+    ]
+  });
+
+  return true;
+}
+
+export async function clearGlobalBlacklistAllow(tabId: number): Promise<void> {
+  await chrome.declarativeNetRequest.updateSessionRules({
+    removeRuleIds: [allowRuleIdForTab(tabId)]
   });
 }
 
@@ -169,13 +198,26 @@ export function getRandomQuote(): string {
   return QUOTES[Math.floor(Math.random() * QUOTES.length)] ?? QUOTES[0];
 }
 
-function buildRules(session: FocusSession): any[] {
+function buildGlobalRules(settings: FocusSettings): any[] {
+  return uniqueDomains(settings.globalBlacklist).slice(0, RULE_ID_COUNT).map((domain, index) => ({
+    id: GLOBAL_RULE_ID_BASE + index,
+    priority: 1,
+    action: redirectAction("global"),
+    condition: {
+      regexFilter: "^(https?://.*)",
+      requestDomains: [domain],
+      resourceTypes: ["main_frame"]
+    }
+  }));
+}
+
+function buildFocusRules(session: FocusSession): any[] {
   if (session.mode === "whitelist") {
     return [
       {
         id: RULE_ID_BASE,
         priority: 1,
-        action: redirectAction(),
+        action: redirectAction("focus"),
         condition: {
           regexFilter: "^(https?://.*)",
           excludedRequestDomains: session.domains,
@@ -188,7 +230,7 @@ function buildRules(session: FocusSession): any[] {
   return session.domains.slice(0, RULE_ID_COUNT).map((domain, index) => ({
     id: RULE_ID_BASE + index,
     priority: 1,
-    action: redirectAction(),
+    action: redirectAction("focus"),
     condition: {
       regexFilter: "^(https?://.*)",
       requestDomains: [domain],
@@ -197,17 +239,31 @@ function buildRules(session: FocusSession): any[] {
   }));
 }
 
-function redirectAction(): any {
+function redirectAction(reason: "focus" | "global"): any {
   const blockedUrl = chrome.runtime.getURL("/blocked.html");
 
   return {
     type: "redirect",
     redirect: {
-      regexSubstitution: `${blockedUrl}#\\1`
+      regexSubstitution: `${blockedUrl}?reason=${reason}#\\1`
     }
   };
 }
 
 function ruleIds(): number[] {
-  return Array.from({ length: RULE_ID_COUNT }, (_, index) => RULE_ID_BASE + index);
+  return [
+    ...Array.from({ length: RULE_ID_COUNT }, (_, index) => RULE_ID_BASE + index),
+    ...Array.from({ length: RULE_ID_COUNT }, (_, index) => GLOBAL_RULE_ID_BASE + index)
+  ];
+}
+
+async function updateBlockingRules(rules: any[]): Promise<void> {
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: ruleIds(),
+    addRules: rules
+  });
+}
+
+function allowRuleIdForTab(tabId: number): number {
+  return GLOBAL_ALLOW_RULE_ID_BASE + tabId;
 }

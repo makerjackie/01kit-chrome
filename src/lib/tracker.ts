@@ -2,6 +2,7 @@ import { TRACKER_TICK_ALARM } from "./constants";
 import { domainFromUrl } from "./domain";
 import { getTimeStats, getTrackerState, saveTimeStats, saveTrackerState } from "./storage";
 import { addDomainTime } from "./stats";
+import { addTimelineSegment } from "./timeline-db";
 import type { TrackerState } from "./types";
 
 const MIN_SEGMENT_MS = 1_000;
@@ -55,12 +56,17 @@ async function closeCurrentSegment(): Promise<void> {
   const state = await getTrackerState();
   if (!state.domain || !state.startedAt || !state.windowFocused || state.idle) return;
 
-  const elapsed = Date.now() - state.startedAt;
+  const endedAt = Date.now();
+  const elapsed = endedAt - state.startedAt;
   if (elapsed < MIN_SEGMENT_MS) return;
-  if (elapsed > MAX_TRACKABLE_SEGMENT_MS) return;
+  const startedAt = elapsed > MAX_TRACKABLE_SEGMENT_MS ? endedAt - MAX_TRACKABLE_SEGMENT_MS : state.startedAt;
+  const trackableMs = endedAt - startedAt;
 
   const stats = await getTimeStats();
-  await saveTimeStats(addDomainTime(stats, state.domain, elapsed));
+  await Promise.all([
+    saveTimeStats(addDomainTime(stats, state.domain, trackableMs, endedAt)),
+    addTimelineSegment(state.domain, startedAt, endedAt)
+  ]);
 }
 
 async function getCurrentTrackableState(): Promise<TrackerState> {
