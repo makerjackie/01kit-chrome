@@ -73,6 +73,16 @@ export default function App() {
     setShowAllStats(false);
   }, [range]);
 
+  useEffect(() => {
+    if (!settings || !window.location.hash) return;
+
+    const animationFrame = window.requestAnimationFrame(() => {
+      document.querySelector(window.location.hash)?.scrollIntoView({ block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(animationFrame);
+  }, [settings]);
+
   const rows = useMemo<DomainStat[]>(() => {
     if (!settings) return [];
     return getDomainStats(stats, settings, range);
