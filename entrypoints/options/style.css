@@ -295,27 +295,13 @@ label {
   padding-top: 0;
 }
 
-.subsection-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-
-.subsection-total {
-  flex: 0 0 auto;
-  font-size: 18px;
-  white-space: nowrap;
-}
-
-.stats-summary {
+.stats-overview {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
-  margin-bottom: 14px;
 }
 
+.stats-overview div,
 .stats-summary div {
   border: 1px solid #101010;
   background: #f6f4ee;
@@ -324,14 +310,31 @@ label {
   gap: 4px;
 }
 
+.stats-overview span,
 .stats-summary span,
 .category-bars > div > span {
   color: #59554d;
   font-size: 12px;
 }
 
+.stats-overview strong,
 .stats-summary strong {
   font-size: 20px;
+}
+
+.subsection-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.stats-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
 }
 
 .category-bars {
@@ -342,13 +345,14 @@ label {
 
 .category-bars > div {
   display: grid;
-  grid-template-columns: 54px minmax(120px, 1fr) 104px;
+  grid-template-columns: 54px minmax(120px, 1fr) 120px;
   align-items: center;
   gap: 10px;
 }
 
 .category-bars b {
   text-align: right;
+  white-space: nowrap;
 }
 
 .timeline-scroll {
@@ -356,10 +360,12 @@ label {
   overflow-y: visible;
   padding: 44px 0 34px;
   margin-top: -36px;
+  overscroll-behavior: contain;
 }
 
 .timeline-canvas {
   min-width: 760px;
+  cursor: zoom-in;
 }
 
 .timeline-help {
@@ -622,6 +628,7 @@ label {
   .settings-layout,
   .stat-row,
   .stats-summary,
+  .stats-overview,
   .category-bars > div,
   .subsection-head {
     grid-template-columns: 1fr;

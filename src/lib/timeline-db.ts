@@ -34,10 +34,10 @@ async function upsertTimelineSegment(segment: TimeSegment): Promise<void> {
   const db = await openTimelineDb();
   const sameDaySegments = await getTimelineSegmentsForDay(segment.day);
   const previous = sameDaySegments
-    .filter((item) => item.domain === segment.domain && item.endedAt <= segment.startedAt)
+    .filter((item) => item.endedAt <= segment.startedAt)
     .sort((a, b) => b.endedAt - a.endedAt)[0];
 
-  if (previous && segment.startedAt - previous.endedAt <= MERGE_GAP_MS) {
+  if (previous && previous.domain === segment.domain && segment.startedAt - previous.endedAt <= MERGE_GAP_MS) {
     await writeStore(db, "readwrite", (store) => store.put({
       ...previous,
       endedAt: Math.max(previous.endedAt, segment.endedAt),

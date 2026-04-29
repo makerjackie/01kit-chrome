@@ -33,6 +33,9 @@ const supportLinks = [
   { label: "使用说明", url: EXTENSION_TUTORIAL_URL }
 ];
 
+const MIN_TIMELINE_ZOOM = 1;
+const MAX_TIMELINE_ZOOM = 8;
+
 export default function App() {
   const [settings, setSettings] = useState<FocusSettings | null>(null);
   const [stats, setStats] = useState<TimeStats>({ days: {} });
@@ -45,8 +48,10 @@ export default function App() {
   const [showAllStats, setShowAllStats] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [showTimelineHelp, setShowTimelineHelp] = useState(false);
+  const [timelineZoom, setTimelineZoom] = useState(1);
   const [importMessage, setImportMessage] = useState("");
   const importInputRef = useRef<HTMLInputElement | null>(null);
+  const timelineScrollRef = useRef<HTMLDivElement | null>(null);
 
   async function reload() {
     const now = Date.now();
@@ -83,26 +88,16 @@ export default function App() {
     return () => window.cancelAnimationFrame(animationFrame);
   }, [settings]);
 
-  const rows = useMemo<DomainStat[]>(() => {
+  const storedRows = useMemo<DomainStat[]>(() => {
     if (!settings) return [];
     return getDomainStats(stats, settings, range);
   }, [settings, stats, range]);
-  const maxMs = rows[0]?.ms ?? 1;
-  const visibleRows = showAllStats ? rows : rows.slice(0, 10);
+  const storedTodayRows = useMemo<DomainStat[]>(() => {
+    if (!settings) return [];
+    return getDomainStats(stats, settings, "today");
+  }, [settings, stats]);
   const todayFocusMs = focusMsForDay(records, dateKey());
   const goalMs = (settings?.dailyFocusGoalMinutes ?? 120) * 60_000;
-  const rangeBrowsingMs = rows.reduce((total, row) => total + row.ms, 0);
-  const categoryRows = useMemo(() => {
-    const totals = new Map<SiteCategory, number>();
-    for (const row of rows) totals.set(row.category, (totals.get(row.category) ?? 0) + row.ms);
-    return categories
-      .map((category) => ({
-        ...category,
-        ms: totals.get(category.value) ?? 0
-      }))
-      .filter((category) => category.ms > 0)
-      .sort((a, b) => b.ms - a.ms);
-  }, [rows]);
   const timeline = useMemo(() => buildTimelineView(timelineSegments), [timelineSegments]);
   const timelineRows = useMemo<DomainStat[]>(() => {
     if (!settings) return [];
@@ -119,10 +114,23 @@ export default function App() {
       }))
       .sort((a, b) => b.ms - a.ms);
   }, [settings, timeline]);
-  const timelineBrowsingMs = timelineRows.reduce((total, row) => total + row.ms, 0);
-  const timelineCategoryRows = useMemo(() => {
+  const todayRows = useMemo<DomainStat[]>(() => {
+    const byDomain = new Map<string, DomainStat>();
+    for (const row of storedTodayRows) byDomain.set(row.domain, row);
+    for (const row of timelineRows) {
+      const storedRow = byDomain.get(row.domain);
+      if (!storedRow || row.ms > storedRow.ms) byDomain.set(row.domain, row);
+    }
+    return Array.from(byDomain.values()).sort((a, b) => b.ms - a.ms);
+  }, [storedTodayRows, timelineRows]);
+  const rows = range === "today" ? todayRows : storedRows;
+  const maxMs = rows[0]?.ms ?? 1;
+  const visibleRows = showAllStats ? rows : rows.slice(0, 10);
+  const todayBrowsingMs = todayRows.reduce((total, row) => total + row.ms, 0);
+  const rangeBrowsingMs = rows.reduce((total, row) => total + row.ms, 0);
+  const categoryRows = useMemo(() => {
     const totals = new Map<SiteCategory, number>();
-    for (const row of timelineRows) totals.set(row.category, (totals.get(row.category) ?? 0) + row.ms);
+    for (const row of rows) totals.set(row.category, (totals.get(row.category) ?? 0) + row.ms);
     return categories
       .map((category) => ({
         ...category,
@@ -130,7 +138,18 @@ export default function App() {
       }))
       .filter((category) => category.ms > 0)
       .sort((a, b) => b.ms - a.ms);
-  }, [timelineRows]);
+  }, [rows]);
+  const todayCategoryRows = useMemo(() => {
+    const totals = new Map<SiteCategory, number>();
+    for (const row of todayRows) totals.set(row.category, (totals.get(row.category) ?? 0) + row.ms);
+    return categories
+      .map((category) => ({
+        ...category,
+        ms: totals.get(category.value) ?? 0
+      }))
+      .filter((category) => category.ms > 0)
+      .sort((a, b) => b.ms - a.ms);
+  }, [todayRows]);
 
   async function patchSettings(patch: Partial<FocusSettings>) {
     if (!settings) return;
@@ -194,6 +213,26 @@ export default function App() {
     if (!window.confirm("清除时间统计和专注记录？")) return;
     await clearTimeStats();
     await reload();
+  }
+
+  function zoomTimeline(event: React.WheelEvent<HTMLDivElement>) {
+    const scrollElement = timelineScrollRef.current;
+    if (!scrollElement) return;
+
+    event.preventDefault();
+    const rect = scrollElement.getBoundingClientRect();
+    const pointerX = event.clientX - rect.left;
+    const scrollRatio = (scrollElement.scrollLeft + pointerX) / Math.max(scrollElement.scrollWidth, 1);
+    const zoomStep = event.deltaY < 0 ? 1.16 : 1 / 1.16;
+
+    setTimelineZoom((currentZoom) => {
+      const nextZoom = Math.min(MAX_TIMELINE_ZOOM, Math.max(MIN_TIMELINE_ZOOM, currentZoom * zoomStep));
+      window.requestAnimationFrame(() => {
+        const nextScrollLeft = scrollElement.scrollWidth * scrollRatio - pointerX;
+        scrollElement.scrollLeft = Math.max(0, nextScrollLeft);
+      });
+      return nextZoom;
+    });
   }
 
   if (!settings) {
@@ -318,7 +357,7 @@ export default function App() {
             <div className="panel-head">
               <div>
                 <h2>时间统计</h2>
-                <p className="panel-subtitle">今日时间线和分类统计使用同一天数据。卸载插件会清掉本地数据，重装前可以先导出 JSON。</p>
+                <p className="panel-subtitle">查看今天的浏览时间、网站分类和网站排行。卸载插件会清掉本地统计，重装前可以先导出 JSON。</p>
               </div>
               <div className="toolbar">
                 <button onClick={exportCsv}>导出 CSV</button>
@@ -336,6 +375,21 @@ export default function App() {
             />
             {importMessage ? <p className="note">{importMessage}</p> : null}
 
+            <div className="stats-overview" aria-label="今日浏览统计总览">
+              <div>
+                <span>今日总浏览</span>
+                <strong>{formatCompactDuration(todayBrowsingMs)}</strong>
+              </div>
+              <div>
+                <span>访问网站</span>
+                <strong>{todayRows.length}</strong>
+              </div>
+              <div>
+                <span>主要分类</span>
+                <strong>{todayCategoryRows[0]?.label ?? "暂无"}</strong>
+              </div>
+            </div>
+
             <div className="stats-section" id="today-timeline">
               <div className="subsection-head">
                 <div>
@@ -352,22 +406,21 @@ export default function App() {
                       ?
                     </button>
                   </div>
-                  <p className="panel-subtitle">从今天第一次可统计的 Chrome 访问到当前时间。</p>
+                  <p className="panel-subtitle">按时间顺序看今天打开过的网站。灰色斜纹表示没有计入的时间。</p>
                 </div>
-                <strong className="subsection-total">{formatCompactDuration(timelineBrowsingMs)}</strong>
               </div>
               {showTimelineHelp ? (
                 <div className="timeline-help" id="timeline-help">
                   <strong>时间线怎么统计</strong>
-                  <p>只记录当前获得系统焦点的 Chrome 窗口里，正在打开的网页域名。系统空闲、Chrome 没有焦点、当前页不是网页地址，都会显示为“未统计”。</p>
-                  <p>多屏场景下，如果你在别的 App 里操作，旁边的 Chrome 虽然可见，也不会继续计入浏览时间。这个口径更保守，避免把后台打开的页面算成实际浏览。</p>
-                  <p>统计会按自然日切分；同一网站中间间隔不超过 1 分钟会合并显示。正在浏览的当前页面会实时补到时间线末尾。</p>
+                  <p>只记录你正在使用的 Chrome 窗口和当前网页。</p>
+                  <p>切到其他 App、系统进入空闲状态，或当前页不是普通网页时，这段时间会显示为“未统计”。</p>
+                  <p>同一网站连续访问会合并显示，当前正在浏览的网站会自动补到时间线末尾。</p>
                 </div>
               ) : null}
               {timeline.blocks.length > 0 ? (
                 <>
-                  <div className="timeline-scroll" aria-label="今日浏览时间线">
-                    <div className="timeline-canvas">
+                  <div ref={timelineScrollRef} className="timeline-scroll" aria-label="今日浏览时间线" onWheel={zoomTimeline}>
+                    <div className="timeline-canvas" style={{ width: `${timelineZoom * 100}%` }}>
                       <div className="timeline-axis">
                         <span>{formatClock(timeline.startedAt)}</span>
                         <span>{formatClock(timeline.endedAt)}</span>
@@ -414,38 +467,24 @@ export default function App() {
                   </div>
                 </>
               ) : (
-                <p className="note">今天已有总时长，但还没有可画出来的时间线明细。继续浏览同一个网站超过 1 分钟后，这里会开始显示；旧版本的总时长不能还原成具体时间点。</p>
+                <p className="note">今天还没有时间线明细。继续浏览同一个网站超过 1 分钟后，这里会开始显示。</p>
               )}
             </div>
 
             <div className="stats-section">
               <div className="subsection-head">
                 <div>
-                  <h3>今日分类统计</h3>
-                  <p className="panel-subtitle">和上面的时间线使用同一天数据。</p>
+                  <h3>今日分类</h3>
+                  <p className="panel-subtitle">看看今天主要花在哪类网站上。</p>
                 </div>
               </div>
-              <div className="stats-summary">
-                <div>
-                  <span>今日总浏览</span>
-                  <strong>{formatCompactDuration(timelineBrowsingMs)}</strong>
-                </div>
-                <div>
-                  <span>网站数量</span>
-                  <strong>{timelineRows.length}</strong>
-                </div>
-                <div>
-                  <span>最多分类</span>
-                  <strong>{timelineCategoryRows[0]?.label ?? "暂无"}</strong>
-                </div>
-              </div>
-              {timelineCategoryRows.length > 0 ? (
+              {todayCategoryRows.length > 0 ? (
                 <div className="category-bars" aria-label="今日分类时间分布">
-                  {timelineCategoryRows.map((category) => (
+                  {todayCategoryRows.map((category) => (
                     <div key={category.value}>
                       <span>{category.label}</span>
                       <div className="bar">
-                        <span style={{ width: `${Math.max(4, (category.ms / timelineBrowsingMs) * 100)}%` }} />
+                        <span style={{ width: `${Math.max(4, (category.ms / Math.max(todayBrowsingMs, 1)) * 100)}%` }} />
                       </div>
                       <b>{formatCompactDuration(category.ms)}</b>
                     </div>
@@ -460,7 +499,7 @@ export default function App() {
               <div className="subsection-head">
                 <div>
                   <h3>网站排行</h3>
-                  <p className="panel-subtitle">按所选范围汇总访问时间。</p>
+                  <p className="panel-subtitle">按网站查看访问时间，可以切换今日、本周和本月。</p>
                 </div>
                 <div className="toolbar">
                   {(["today", "week", "month"] as StatsRange[]).map((item) => (
@@ -470,20 +509,22 @@ export default function App() {
                   ))}
                 </div>
               </div>
-              <div className="stats-summary">
-                <div>
-                  <span>{range === "today" ? "今日总浏览" : range === "week" ? "本周总浏览" : "本月总浏览"}</span>
-                  <strong>{formatCompactDuration(rangeBrowsingMs)}</strong>
+              {range !== "today" ? (
+                <div className="stats-summary">
+                  <div>
+                    <span>{range === "week" ? "本周总浏览" : "本月总浏览"}</span>
+                    <strong>{formatCompactDuration(rangeBrowsingMs)}</strong>
+                  </div>
+                  <div>
+                    <span>网站数量</span>
+                    <strong>{rows.length}</strong>
+                  </div>
+                  <div>
+                    <span>主要分类</span>
+                    <strong>{categoryRows[0]?.label ?? "暂无"}</strong>
+                  </div>
                 </div>
-                <div>
-                  <span>网站数量</span>
-                  <strong>{rows.length}</strong>
-                </div>
-                <div>
-                  <span>最多分类</span>
-                  <strong>{categoryRows[0]?.label ?? "暂无"}</strong>
-                </div>
-              </div>
+              ) : null}
               <div className="stats-table">
                 {visibleRows.map((row) => (
                   <div className="stat-row" key={row.domain}>
