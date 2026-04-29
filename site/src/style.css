@@ -178,7 +178,8 @@ h1 {
   gap: 14px;
 }
 
-.cta a {
+.cta a,
+.cta .pending {
   min-height: 54px;
   display: inline-flex;
   align-items: center;
@@ -202,6 +203,19 @@ h1 {
   background: #2d2a23;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(24, 23, 19, 0.2);
+}
+
+.cta .pending,
+.install-btn.pending {
+  cursor: default;
+  opacity: 0.78;
+}
+
+.cta .pending:hover,
+.install-btn.pending:hover {
+  background: #181713;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(24, 23, 19, 0.15);
 }
 
 .cta .secondary {
@@ -662,6 +676,7 @@ h1 {
   border: 1.5px solid #181713;
   border-radius: 999px;
   padding: 0 24px;
+  font: inherit;
   font-weight: 700;
   font-size: 15px;
   margin-top: 4px;
@@ -913,7 +928,8 @@ footer span {
     width: calc(100% - 8px);
   }
 
-  .cta a {
+  .cta a,
+  .cta .pending {
     width: min(100%, calc(100vw - 64px));
     max-width: 100%;
     min-width: 0;
@@ -922,7 +938,8 @@ footer span {
     font-size: 15px;
   }
 
-  .cta a span {
+  .cta a span,
+  .cta .pending span {
     min-width: 0;
   }
 

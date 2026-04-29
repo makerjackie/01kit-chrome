@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 
 const downloadUrl = "/downloads/01kit-chrome.zip";
-const storeUrl = "https://chromewebstore.google.com/search/01Kit";
 const tutorialUrl = "/docs/01kit-guide.md";
 const currentVersion = "0.1";
 
@@ -33,7 +32,7 @@ const copy = {
       badges: ["本地优先", "零上传", "开源"],
       title: <>专注时间<br />不被打断</>,
       lead: <>一键屏蔽分心网站，自动记录时间分配。<br />所有数据保存在浏览器本地，永不上传。</>,
-      store: "Chrome 应用商店安装",
+      store: "上架中，请耐心等待",
       download: "下载离线包"
     },
     mock: {
@@ -78,7 +77,7 @@ const copy = {
       eyebrow: "安装方式",
       title: "两种安装方式",
       steps: [
-        ["Chrome 应用商店", "能访问 Chrome 应用商店时，直接从商店安装，自动更新。", "前往应用商店"],
+        ["Chrome 应用商店", "Chrome 应用商店正在上架中，暂时可以使用离线安装包。", "上架中，请耐心等待"],
         ["离线安装包", <>不能访问商店时，下载离线包，打开 <code>chrome://extensions</code>，启用开发者模式后加载解压目录。</>, "下载离线包"]
       ]
     },
@@ -141,7 +140,7 @@ const copy = {
       badges: ["Local-first", "No uploads", "Open source"],
       title: <>Focus time<br />without detours</>,
       lead: <>Block distracting sites with one click.<br />See where browser time goes.<br />Your data stays in your browser.</>,
-      store: "Install from Chrome Web Store",
+      store: "Chrome Web Store review in progress",
       download: "Download offline package"
     },
     mock: {
@@ -186,7 +185,7 @@ const copy = {
       eyebrow: "Install",
       title: "Two ways to install",
       steps: [
-        ["Chrome Web Store", "Install directly from the Chrome Web Store when it is available. Updates are handled automatically.", "Open Web Store"],
+        ["Chrome Web Store", "The Chrome Web Store listing is under review. Please use the offline package for now.", "Coming soon"],
         ["Offline package", <>If the store is not available, download the package, open <code>chrome://extensions</code>, enable Developer mode, and load the extracted folder.</>, "Download package"]
       ]
     },
@@ -295,12 +294,9 @@ export default function App() {
           <h1>{c.hero.title}</h1>
           <p className="hero-lead">{c.hero.lead}</p>
           <div className="cta">
-            <a className="primary" href={storeUrl} target="_blank" rel="noreferrer">
+            <span className="primary pending" aria-disabled="true">
               <span>{c.hero.store}</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
+            </span>
             <a className="secondary" href={downloadUrl}>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M8 2V11M8 11L5 8M8 11L11 8M2 14H14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -407,9 +403,11 @@ export default function App() {
                 <div>
                   <h3>{title}</h3>
                   <p>{body}</p>
-                  <a className={`install-btn ${index === 0 ? "primary" : "secondary"}`} href={index === 0 ? storeUrl : downloadUrl} target={index === 0 ? "_blank" : undefined} rel={index === 0 ? "noreferrer" : undefined}>
-                    {action}
-                  </a>
+                  {index === 0 ? (
+                    <button className="install-btn primary pending" type="button" disabled>{action}</button>
+                  ) : (
+                    <a className="install-btn secondary" href={downloadUrl}>{action}</a>
+                  )}
                 </div>
               </article>
             ))}
