@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 const downloadUrl = "/downloads/01kit-chrome.zip";
 const tutorialUrl = "/docs/01kit-guide.md";
+const mvpUrl = "https://01mvp.com";
 const currentVersion = "0.1";
 
 type Locale = "zh" | "en";
@@ -16,8 +17,8 @@ type SiteVideo = {
 const copy = {
   zh: {
     htmlLang: "zh-CN",
-    title: "01Kit Chrome - 本地优先的专注工具",
-    description: "01Kit 是一个本地优先的 Chrome 生产力插件，包含专注模式、网站屏蔽和时间统计。",
+    title: "01Kit Chrome - 本地优先的浏览器工作台",
+    description: "01Kit 是一个本地优先的浏览器工作台，用来管理专注、网站屏蔽、时间记录和常用小工具。",
     navLabel: "主导航",
     nav: {
       features: "功能",
@@ -30,8 +31,8 @@ const copy = {
     },
     hero: {
       badges: ["本地优先", "零上传", "开源"],
-      title: <>专注时间<br />不被打断</>,
-      lead: <>一键屏蔽分心网站，自动记录时间分配。<br />所有数据保存在浏览器本地，永不上传。</>,
+      title: <>浏览器里的<br />个人工作台</>,
+      lead: <>管理专注、屏蔽打扰、记录时间。<br />所有数据保存在浏览器本地，永不上传。</>,
       store: "上架中，请耐心等待",
       download: "下载离线包"
     },
@@ -41,26 +42,27 @@ const copy = {
       pause: "暂停 5 分钟",
       end: "结束专注"
     },
-    strip: ["专注计时", "网站屏蔽", "时间统计", "本地数据"],
+    strip: ["专注计时", "网站屏蔽", "时间统计", "小工具入口", "本地数据"],
     videos: {
       eyebrow: "演示视频",
-      title: "看一遍就会用",
-      lead: "开启专注、拦截分心网站、查看时间统计，完整流程都在这里。",
+      title: "把浏览器里的打扰变成可控状态",
+      lead: "先挡住最容易顺手打开的网站，再用时间线看清浏览时间去了哪里。",
       video: {
         label: "01Kit 演示",
-        title: "从开启专注到查看统计",
-        body: "跟着视频走一遍，就可以开始用。",
+        title: "从拦截到复盘",
+        body: "注意力、规则和记录放在一个本地入口里，打开浏览器就能用。",
         src: "/media/01kit-demo-zh.mp4",
         poster: "/media/01kit-demo-zh-poster.png"
       }
     },
     features: {
       eyebrow: "核心功能",
-      title: "专注、屏蔽、统计，三个功能解决一个问题",
+      title: "从注意力管理开始，放下常用的小工具",
       items: [
         ["专注计时", "25/45/60 分钟预设，或自定义 1-240 分钟。一键开启，自动屏蔽分心网站。"],
         ["智能屏蔽", "黑名单拦截干扰源，白名单保护工作流。专注期间自动生效，结束后恢复访问。"],
         ["时间统计", "按域名记录停留时间，支持日/周/月视图。窗口失焦不计时，数据真实可靠。"],
+        ["小工具入口", "后续会继续加入围绕浏览器使用习惯的本地工具，保持轻量，不打扰当前页面。"],
         ["本地存储", "所有数据保存在浏览器本地，不上传服务器。可以一键清除记录。"]
       ],
       noteLabel: "使用说明",
@@ -84,7 +86,7 @@ const copy = {
     changelog: {
       eyebrow: "更新日志",
       title: `版本 ${currentVersion}`,
-      lead: "01Kit 的第一个版本，主线是本地优先的 Chrome 专注工具。",
+      lead: "01Kit 的第一个版本，从本地优先的注意力管理和时间记录开始。",
       back: "返回 01Kit",
       releases: [
         {
@@ -103,7 +105,8 @@ const copy = {
       ]
     },
     footer: {
-      maker: "01Kit by 01MVP",
+      makerPrefix: "01Kit by",
+      maker: "01MVP",
       guide: "使用说明",
       changelog: "更新日志",
       privacy: "隐私说明"
@@ -124,8 +127,8 @@ const copy = {
   },
   en: {
     htmlLang: "en",
-    title: "01Kit Chrome - Local-first focus for your browser",
-    description: "01Kit is a local-first Chrome productivity extension with focus mode, site blocking, and time stats.",
+    title: "01Kit Chrome - A local-first browser workspace",
+    description: "01Kit is a local-first browser workspace for focus, site blocking, time records, and small personal tools.",
     navLabel: "Primary navigation",
     nav: {
       features: "Features",
@@ -138,8 +141,8 @@ const copy = {
     },
     hero: {
       badges: ["Local-first", "No uploads", "Open source"],
-      title: <>Focus time<br />without detours</>,
-      lead: <>Block distracting sites with one click.<br />See where browser time goes.<br />Your data stays in your browser.</>,
+      title: <>A personal workspace<br />inside your browser</>,
+      lead: <>Manage focus, block distractions, and track browser time.<br />Your data stays in your browser.</>,
       store: "Chrome Web Store review in progress",
       download: "Download offline package"
     },
@@ -149,26 +152,27 @@ const copy = {
       pause: "Pause 5 min",
       end: "End focus"
     },
-    strip: ["Focus timer", "Site blocking", "Time stats", "Local data"],
+    strip: ["Focus timer", "Site blocking", "Time stats", "Tool entries", "Local data"],
     videos: {
       eyebrow: "Demo video",
-      title: "See how 01Kit works",
-      lead: "Start a focus session, block distracting sites, and review your browser time in one quick walkthrough.",
+      title: "Turn browser distractions into something manageable",
+      lead: "Block the sites you open by reflex, then use the timeline to see where browser time went.",
       video: {
         label: "01Kit demo",
-        title: "Start focus, block distractions, review stats",
-        body: "Watch the flow once, then start your own focus session.",
+        title: "From blocking to review",
+        body: "Focus, rules, and records live in one local entry point for everyday browser work.",
         src: "/media/01kit-demo-en.mp4",
         poster: "/media/01kit-demo-en-poster.png"
       }
     },
     features: {
       eyebrow: "Core features",
-      title: "Focus, block, and measure in one small extension",
+      title: "Start with attention management, keep room for small tools",
       items: [
         ["Focus timer", "Use 25/45/60 minute presets or set any duration from 1 to 240 minutes. Start once and blocking turns on automatically."],
         ["Smart blocking", "Blocklist distracting sites and keep work sites open with an allowlist. Rules activate during focus and restore afterward."],
         ["Time stats", "See time by domain across day, week, and month views. Unfocused windows are not counted."],
+        ["Tool entries", "More local tools around browser habits can be added over time without cluttering the current page."],
         ["Local storage", "Stats, lists, and settings stay in Chrome local storage. Clear history at any time."]
       ],
       noteLabel: "Guide",
@@ -192,7 +196,7 @@ const copy = {
     changelog: {
       eyebrow: "Changelog",
       title: `Version ${currentVersion}`,
-      lead: "The first 01Kit release focuses on local-first browser focus.",
+      lead: "The first 01Kit release starts with local-first attention management and time records.",
       back: "Back to 01Kit",
       releases: [
         {
@@ -211,7 +215,8 @@ const copy = {
       ]
     },
     footer: {
-      maker: "01Kit by 01MVP",
+      makerPrefix: "01Kit by",
+      maker: "01MVP",
       guide: "Guide",
       changelog: "Changelog",
       privacy: "Privacy"
@@ -416,7 +421,9 @@ export default function App() {
       </section>
 
       <footer>
-        <span>{c.footer.maker}</span>
+        <span>
+          {c.footer.makerPrefix} <a href={mvpUrl}>{c.footer.maker}</a>
+        </span>
         <a href={tutorialUrl}>{c.footer.guide}</a>
         <a href={changelogPath}>{c.footer.changelog}</a>
         <a href={privacyPath}>{c.footer.privacy}</a>

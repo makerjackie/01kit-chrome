@@ -1,6 +1,6 @@
 # 01Kit Chrome
 
-01Kit 是一个本地优先的 Chrome 生产力插件，包含专注模式、网站屏蔽、时间统计、专注记录、每日目标、快捷键、通知和数据导出。
+01Kit 是一个本地优先的浏览器工作台，用来管理专注、网站屏蔽、浏览时间记录和常用的小工具入口。统计、站点列表和设置都保存在浏览器本地。
 
 - 使用说明：[01Kit 安装和使用说明](./docs/01kit-guide.md)
 - 上架材料：[Chrome Web Store 上架材料](./docs/chrome-web-store-submission.md)
